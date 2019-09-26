@@ -1,0 +1,28 @@
+
+server:
+  port: 8688
+
+spring:
+  application:
+    name: course-except
+  profiles:
+    active: enc
+
+fehead:
+  browser:
+    telParameter: tel
+    sendOtpCode: /send/otpCode
+    formLoginUrl: /api/v1.0/user/login/tel
+    otpLoginUrl: /api/v1.0/user/login/sms
+  smsProperties:
+    appKey: LTAIqwxU8y65KvAg
+    secret: 8UwBxCvhl9vpTR1IEv4LNiHrxvNTo5
+    regionId: cn-hangzhou
+    signName: 堆栈科技
+    smsModel:
+      - {name: SMS_171112301, des: 注册}
+      - {name: SMS_171117329, des: 登录}
+      - {name: SMS_173349171, des: 重置密码}
+    smsNumber: 6
+  sendEmailProperties:
+    fromAddress: 1948730080@qq.com
