@@ -15,9 +15,6 @@ fehead:
     formLoginUrl: /api/v1.0/user/login/tel
     otpLoginUrl: /api/v1.0/user/login/sms
   smsProperties:
-    appKey: LTAIqwxU8y65KvAg
-    secret: 8UwBxCvhl9vpTR1IEv4LNiHrxvNTo5
-    regionId: cn-hangzhou
     signName: 堆栈科技
     smsModel:
       - {name: SMS_171112301, des: 注册}
