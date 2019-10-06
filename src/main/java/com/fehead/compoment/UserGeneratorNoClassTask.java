@@ -25,7 +25,7 @@ public class UserGeneratorNoClassTask{
     @Autowired
     NoClassGenerator noClassGenerator;
 
-    @Async
+    @Async   // 支持异步
     public void noClassAction(long userId) {
 
         // 生成用户的单元无课表 并写入数据库
