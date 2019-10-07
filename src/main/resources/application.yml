@@ -3,13 +3,34 @@ server:
   port: 8688
 
 spring:
+#  datasource: your datasource config
+#    url: jdbc:
+#    username:
+#    password:
+#    name:
+#    type: com.alibaba.druid.pool.DruidDataSource
+#  redis:
+#    database:
+#    host:
+#    port:
+#    password: redis
+#    pool:
+#    max-active: 8   # 最大连接数
+#    max-wait: 1     # 最大阻塞等待时间
+#    max-idle: 8     # 最大空闲连接
+#    min-idle: 0     # 最小空闲连接
+#    timeout: 20000        # 连接超时时间
   application:
     name: course-except
+    #数据库配置相关信息写在另一个配置文件里
   profiles:
     active: enc
 
 fehead:
   browser:
+#    appKey: your appKey
+#    secret: your secret
+#    regionId: your regionId
     telParameter: tel
     sendOtpCode: /send/otpCode
     formLoginUrl: /api/v1.0/user/login/tel
