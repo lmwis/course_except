@@ -16,6 +16,7 @@ import com.fehead.response.FeheadResponse;
 import com.fehead.service.CourseService;
 import com.fehead.service.model.AddFormArr;
 import com.fehead.service.model.UpdateFormArr;
+import com.fehead.validate.CourseValidator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -37,9 +38,9 @@ import java.util.List;
 @RequestMapping("/course")
 public class CourseController extends BaseController {
 
-    public static final String weekTemp="00000000000000000000"; // 0表示没课，1表示有课
+    public static final String weekTemp = "00000000000000000000"; // 0表示没课，1表示有课
 
-    public static final String weekTempFull="11111111111111111111"; // 0表示没课，1表示有课
+    public static final String weekTempFull = "11111111111111111111"; // 0表示没课，1表示有课
 
     private String weeksCount = weekTemp;
 
@@ -63,6 +64,9 @@ public class CourseController extends BaseController {
 
     @Autowired
     GroupController groupController;
+
+    @Autowired
+    CourseValidator courseValidator; // 课程校验器
 
 
 //    /**
@@ -123,6 +127,7 @@ public class CourseController extends BaseController {
 
     /**
      * 创建新的课程单元
+     *
      * @param userId
      * @param forms
      * @return
@@ -134,39 +139,50 @@ public class CourseController extends BaseController {
     public FeheadResponse createCourse(@RequestParam("user_id") String userId, @RequestParam("add_forms_arr") String forms) throws BusinessException, IOException {
 
         AddFormArr[] addFormArrs = objectMapper.readValue(forms, AddFormArr[].class);
-        if(!validateNull(forms,userId)){
+        if (!validateNull(forms, userId)) {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
-        if(userMapper.selectById(userId)==null){ // 用户检查
+        if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
         }
 
-        for (int i=0;i<addFormArrs.length;i++){
+        for (int i = 0; i < addFormArrs.length; i++) {
             String weeks = addFormArrs[0].getWeeks();
             String week = addFormArrs[0].getWeek();
             int period = addFormArrs[0].getPeriod();
-            String weeksText = addFormArrs[0].getWeeks_text();
+
+//            String weeksText = addFormArrs[0].getWeeks_text();
 
             // weeks校验
-            char[] chars = weeks.toCharArray();
-            if(chars.length!=20){ // 格式不合法
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+            if(courseValidator.validateWeeks(weeks)){
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"周次不合法");
+            }
+            // period校验
+            if(courseValidator.validatePeriod(period)){// 节数格式不合法
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"节数格式不合法");
+            }
+            // 星期校验
+            if(courseValidator.validateWeek(week)){// 节数格式不合法
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"星期不合法");
             }
 
+            String weeksText = noClassGenerator.convertWeeksTestFromWeeks(weeks); // 将weeks转化为文本形式
+
+
             // 数据校验
-            if(!validateNull(weeks,week,period,weeksText)){
+            if (!validateNull(weeks, week, period, weeksText)) {
                 throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
             }
 
             QueryWrapper<Course> queryWrapper = new QueryWrapper<>();
 
-            queryWrapper.eq("user_id",userId);
-            queryWrapper.eq("week",week);
-            queryWrapper.eq("weeks",weeks);
-            queryWrapper.eq("period",period);
+            queryWrapper.eq("user_id", userId);
+            queryWrapper.eq("week", week);
+            queryWrapper.eq("weeks", weeks);
+            queryWrapper.eq("period", period);
             Course courseInSql = courseMapper.selectOne(queryWrapper);
-            if (courseInSql!=null){ // 课程已经添加过了
-                throw new BusinessException(EmBusinessError.USER_NOT_EXIST,"请勿重复添加相同的课程");
+            if (courseInSql != null) { // 课程已经添加过了
+                throw new BusinessException(EmBusinessError.USER_NOT_EXIST, "请勿重复添加相同的课程");
             }
             Course course = new Course();
             course.setUserId(new Integer(userId));
@@ -176,7 +192,7 @@ public class CourseController extends BaseController {
             course.setWeeksText(weeksText);
 
             // 线程保护 写入数据库
-            synchronized (CourseController.class){
+            synchronized (CourseController.class) {
                 courseMapper.insert(course);
             }
         }
@@ -191,12 +207,13 @@ public class CourseController extends BaseController {
 
     /**
      * 删除
+     *
      * @param id
      * @return
      */
     @DeleteMapping("/{id}")
     @ApiOperation("根据id删除一个课程单元")
-    public FeheadResponse deleteCourse(@PathVariable("id")int id){
+    public FeheadResponse deleteCourse(@PathVariable("id") int id) {
 
         courseMapper.deleteById(id);
 
@@ -205,6 +222,7 @@ public class CourseController extends BaseController {
 
     /**
      * 查询用户所有的课
+     *
      * @param userId
      * @return
      * @throws BusinessException
@@ -213,7 +231,7 @@ public class CourseController extends BaseController {
     @ApiOperation("查询用户所有的课")
     public FeheadResponse getAllCourse(@RequestParam("user_id") int userId) throws BusinessException {
 
-        if(userMapper.selectById(userId)==null){ // 用户检查
+        if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
         }
         List<Course> courses = courseService.selectByUserId(userId);
@@ -221,7 +239,6 @@ public class CourseController extends BaseController {
         return CommonReturnType.create(courses);
 
     }
-
 
 
 //    @PutMapping("/")
@@ -239,16 +256,17 @@ public class CourseController extends BaseController {
 
     /**
      * 根据id获取信息
+     *
      * @param id
      * @return
      * @throws BusinessException
      */
     @GetMapping("/{id}")
     @ApiOperation("根据id获取单元课程信息")
-    public FeheadResponse getCourseById(@PathVariable("id")int id) throws BusinessException {
+    public FeheadResponse getCourseById(@PathVariable("id") int id) throws BusinessException {
         Course course = courseMapper.selectById(id);
-        if (course==null){
-            throw new BusinessException(EmBusinessError.DATARESOURCE_CONNECT_FAILURE,"数据不存在");
+        if (course == null) {
+            throw new BusinessException(EmBusinessError.DATARESOURCE_CONNECT_FAILURE, "数据不存在");
         }
         return CommonReturnType.create(course);
 
@@ -256,6 +274,7 @@ public class CourseController extends BaseController {
 
     /**
      * 修改
+     *
      * @param userId
      * @param forms
      * @return
@@ -277,31 +296,42 @@ public class CourseController extends BaseController {
             String week = updateFormArr.getWeek();
             int period = updateFormArr.getPeriod();
             String weeksText = updateFormArr.getWeeks_text();
-            if(updateFormArr.getId()<=0){ //id小于0是需要添加的
-
+            if (updateFormArr.getId() <= 0) { //id小于0是需要添加的
                 // weeks校验
-                char[] chars = weeks.toCharArray();
-                if(chars.length!=20){ // 格式不合法
-                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+                if(courseValidator.validateWeeks(weeks)){
+                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"周次不合法");
                 }
                 // 数据校验
-                if(!validateNull(weeks,week,period,weeksText)){
+                if (!validateNull(weeks, week, period, weeksText)) {
                     throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
                 }
                 createForms.add(updateFormArr);
-            }else if(StringUtils.equals(updateFormArr.getWeeks_text(),"delete")){ // 是需要删除的
+            } else if (StringUtils.equals(updateFormArr.getWeeks_text(), "delete")) { // 是需要删除的
                 courseMapper.deleteById(updateFormArr.getId());
-            }else{ //需要修改的
+            } else { //需要修改的
+
+                // 重新转化weeks_text
+                weeksText = noClassGenerator.convertWeeksTestFromWeeks(weeks);
 
                 // weeks校验
-                char[] chars = weeks.toCharArray();
-                if(chars.length!=20){ // 格式不合法
-                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+                if(courseValidator.validateWeeks(weeks)){
+                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"周次不合法");
                 }
                 // 数据校验
-                if(!validateNull(weeks,week,period,weeksText)){
+                if (!validateNull(weeks, week, period, weeksText)) {
                     throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
                 }
+
+                // period校验
+                if(courseValidator.validatePeriod(period)){// 节数格式不合法
+                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"节数格式不合法");
+                }
+
+                // 星期校验
+                if(courseValidator.validateWeek(week)){// 节数格式不合法
+                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"星期不合法");
+                }
+
                 Course course = new Course();
                 course.setId(updateFormArr.getId());
                 course.setUserId(new Integer(userId));
@@ -313,10 +343,10 @@ public class CourseController extends BaseController {
                 courseMapper.updateById(course);
             }
         }
-        if(createForms.size()>0){
+        if (createForms.size() > 0) {
             String s = objectMapper.writeValueAsString(createForms);
             // 创建课程
-            createCourse(userId,s);
+            createCourse(userId, s);
         }
 
 
@@ -342,9 +372,9 @@ public class CourseController extends BaseController {
 
     @GetMapping("/user/{user_id}/week}")
     @ApiOperation("获取用户某星期的课程")
-    public FeheadResponse getCourseByWeek(@PathVariable("user_id") int userId,@RequestParam("week") String week) throws BusinessException {
+    public FeheadResponse getCourseByWeek(@PathVariable("user_id") int userId, @RequestParam("week") String week) throws BusinessException {
 
-        if(userMapper.selectById(userId)==null){ // 用户检查
+        if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
         }
 
@@ -355,9 +385,9 @@ public class CourseController extends BaseController {
 
     @GetMapping("/user/{user_id}/weeks}")
     @ApiOperation("获取用户某一周的课程")
-    public FeheadResponse getCourseByWeeks(@PathVariable("user_id") int userId,@RequestParam("weeks") int weeks) throws BusinessException {
+    public FeheadResponse getCourseByWeeks(@PathVariable("user_id") int userId, @RequestParam("weeks") int weeks) throws BusinessException {
 
-        if(userMapper.selectById(userId)==null){ // 用户检查
+        if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
         }
 
@@ -368,12 +398,13 @@ public class CourseController extends BaseController {
 
     /**
      * 获取某用户的无课表
+     *
      * @param userId
      * @return
      */
     @GetMapping("/no_class/{id}")
     @ApiOperation("获取用户的无课表")
-    public FeheadResponse getNoClass(@PathVariable("id") int userId){
+    public FeheadResponse getNoClass(@PathVariable("id") int userId) {
 
         Collection<NoCoursePack> courses = courseService.getUserNoClassPack(userId);
 
@@ -383,6 +414,7 @@ public class CourseController extends BaseController {
 
     /**
      * 获取部门无课表
+     *
      * @param groupId
      * @param weeks
      * @param include
@@ -392,23 +424,25 @@ public class CourseController extends BaseController {
     @ApiOperation("获取部门的无课表")
     public FeheadResponse getGroupNoClass(@RequestParam("user_id") int userId
             , @PathVariable("id") int groupId
-            ,@RequestParam(value = "weeks",required = false,defaultValue = "1") int weeks
-            ,@RequestParam(value = "include",required = false,defaultValue = "0") @ApiParam(value = "非必要参数，是否需要包含部门组织者的课表：需要为1，不需要为0") int include) throws BusinessException {
+            , @RequestParam(value = "weeks", required = false, defaultValue = "1") int weeks
+            , @RequestParam(value = "include", required = false, defaultValue = "0") @ApiParam(value = "非必要参数，是否需要包含部门组织者的课表：需要为1，不需要为0") int include) throws BusinessException {
 
-        groupController.groupActionValidate(userId,groupId);
+        groupController.groupActionValidate(userId, groupId);
 
-        Collection<NoCourse4Group> courses =null;
-        if(include==1){
-            courses = courseService.getGroupNoClassPackOrderByWeeksInclude(groupId,weeks);
-        }else{
-            courses = courseService.getGroupNoClassPackOrderByWeeks(groupId,weeks);
+        Collection<NoCourse4Group> courses = null;
+        if (include == 1) {
+            courses = courseService.getGroupNoClassPackOrderByWeeksInclude(groupId, weeks);
+        } else {
+            courses = courseService.getGroupNoClassPackOrderByWeeks(groupId, weeks);
         }
 
 
         return CommonReturnType.create(courseService.packNoClass4Group(courses));
     }
+
     /**
      * 生成用户无课表
+     *
      * @return
      */
     @GetMapping("/no_class/generate/{id}")

@@ -127,5 +127,19 @@ public class AppTest
 
     }
 
+    @Test
+    public void whenConvertWeeksTestFromWeeks(){
+
+        /**
+         * 10100111111111000011 -> 1,3,6-14,19-20
+         * 11111001101000000000 -> 1-5,8-9,11
+         * 10000111111111111110 -> 1,6-20
+         *
+         */
+        String weeks = "10100111111111000011";
+        System.out.println(noClassGenerator.convertWeeksTestFromWeeks(weeks));
+
+    }
+
 
 }
