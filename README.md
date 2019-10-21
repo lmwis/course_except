@@ -43,3 +43,27 @@
     </build>
 </project>
 ```
+
+## docker容器启动脚本
+
+### 后台服务
+```
+docker run 
+-d 
+-p 8888:80 #端口映射
+--name course_except_java_${version} #容器名
+lmwis/course_except #镜像名(不加tag默认为lastest)
+```
+### nginx静态资源
+
+```
+docker run 
+-d 
+-p 8082:80 #端口映射
+-v /home/nginx_client/course_except/${version}/conf/nginx.conf:/etc/nginx/nginx.conf #全局配置文件 
+-v /home/nginx_client/course_except/${version}/html:/usr/share/nginx/html #资源文件
+-v /home/nginx_client/course_except/${version}/logs:/var/log/nginx #日志文件
+-v /home/nginx_client/course_except/${version}/conf.d:/etc/nginx/conf.d #项目配置文件
+--name course_except_nginx_${version} #容器名
+nginx #镜像名(不加tag默认为最新版)
+```
