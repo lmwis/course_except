@@ -4,6 +4,7 @@ import com.fehead.authentication.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,14 +44,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(corsFilter,JWTAuthenticationFilter.class)
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
+                .loginPage("/authentication/require")
                 .loginProcessingUrl("/user/login")
                 .successHandler(feheadAuthenticationSuccessHandler)
                 .failureHandler(feheadAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user","/course","/user/login","/group/**","/group"
-                        ,"/point/**","/unit/**","/type/**"
-                        ,"/admin/init","/course/**"
+                .antMatchers("/user","/authentication/require"
+//                        ,"/course"
+                        ,"/user/login"
+//                        ,"/group/**"
+//                        ,"/group"
+//                        ,"/admin/init","/course/**"
                         ,"/admin/points/list","/admin/units/list").permitAll()
                 .antMatchers("/sys/**").permitAll()
                 // swagger start
@@ -62,6 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/configuration/ui").permitAll()
                 .antMatchers("/configuration/security").permitAll()
                 // swagger end
+                .mvcMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and().cors()
