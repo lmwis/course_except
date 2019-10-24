@@ -46,7 +46,7 @@ public class UserController extends BaseController {
     UserGeneratorNoClassTask userGeneratorNoClassTask;
 
     @PostMapping()
-    @ApiOperation("用户注册")
+    @ApiOperation(value = "用户注册",response = FeheadResponse.class)
     public FeheadResponse register(String nickname, String password, String tel,String sms_key) throws BusinessException {
 
 

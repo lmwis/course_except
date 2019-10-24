@@ -235,7 +235,7 @@ public class GroupController extends BaseController {
      * @throws BusinessException
      */
     @GetMapping("/users")
-    @ApiOperation("获取组织里面的所有成员，包括创建者")
+    @ApiOperation(value = "获取组织里面的所有成员，包括创建者",response = CommonReturnType.class)
     public FeheadResponse getGroupUsers(@RequestParam("user_id") int userId,int id) throws BusinessException {
         // 校验
         groupActionValidate(userId,id);

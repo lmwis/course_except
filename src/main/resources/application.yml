@@ -43,4 +43,4 @@ fehead:
       - {name: SMS_173349171, des: 重置密码}
     smsNumber: 6
   sendEmailProperties:
-    fromAddress: 1948730080@qq.com
+    fromAddress: detectiveygn@163.com
