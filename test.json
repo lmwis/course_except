@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          username: 123
+          password: 123
+          uri: https://github.com/lmwis/course-except.git
+          # 超时时间
+          timeout: 4
+          # 默认分支
+          default-label: master
