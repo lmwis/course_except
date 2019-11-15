@@ -5,19 +5,21 @@ import com.fehead.dao.PasswordMapper;
 import com.fehead.dao.UserMapper;
 import com.fehead.dao.entity.Password;
 import com.fehead.dao.entity.User;
-import com.fehead.error.BusinessException;
-import com.fehead.error.EmBusinessError;
-import com.fehead.response.CommonReturnType;
-import com.fehead.response.FeheadResponse;
+import com.fehead.lang.controller.BaseController;
+import com.fehead.lang.error.BusinessException;
+import com.fehead.lang.error.EmBusinessError;
+import com.fehead.lang.response.CommonReturnType;
+import com.fehead.lang.response.FeheadResponse;
 import com.fehead.service.RedisService;
 import com.fehead.utils.CheckEmailAndTelphoneUtil;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -30,6 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController extends BaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -45,14 +49,15 @@ public class UserController extends BaseController {
     @Autowired
     UserGeneratorNoClassTask userGeneratorNoClassTask;
 
+
     @PostMapping()
-    @ApiOperation(value = "用户注册",response = FeheadResponse.class)
-    public FeheadResponse register(String nickname, String password, String tel,String sms_key) throws BusinessException {
+    @ApiOperation(value = "用户注册", response = FeheadResponse.class)
+    public FeheadResponse register(String nickname, String password, String tel, String sms_key) throws BusinessException {
 
 
         User user = new User();
-        if(StringUtils.isEmpty(nickname)
-                ||StringUtils.isEmpty(password)||StringUtils.isEmpty(tel)){
+        if (StringUtils.isEmpty(nickname)
+                || StringUtils.isEmpty(password) || StringUtils.isEmpty(tel)) {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
 
@@ -74,11 +79,11 @@ public class UserController extends BaseController {
                 // 进行注册
                 // 注册流程
                 User user1 = userMapper.selectByUsername(nickname);
-                if(user1!=null){ // 昵称不能重复
+                if (user1 != null) { // 昵称不能重复
                     throw new BusinessException(EmBusinessError.USER_ALREAY_EXIST);
                 }
                 user1 = userMapper.selectByUserTel(tel);
-                if(user1!=null){ // 手机号不能重复
+                if (user1 != null) { // 手机号不能重复
                     throw new BusinessException(EmBusinessError.USER_ALREAY_EXIST);
                 }
 
@@ -110,7 +115,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/resetPassword")
     @ApiOperation("重置密码")
-    public FeheadResponse resetPassword(String tel,String password,String sms_key) throws BusinessException {
+    public FeheadResponse resetPassword(String tel, String password, String sms_key) throws BusinessException {
 
         if (password.isEmpty()) {
             logger.info("密码为空");

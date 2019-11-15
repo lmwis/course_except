@@ -1,9 +1,7 @@
 package com.fehead.config;
 
-import com.fehead.response.AuthenticationReturnType;
-import com.fehead.response.CommonReturnType;
-import com.fehead.response.FeheadResponse;
-import org.apache.commons.lang3.StringUtils;
+import com.fehead.lang.response.CommonReturnType;
+import com.fehead.lang.response.FeheadResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -11,7 +9,6 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;

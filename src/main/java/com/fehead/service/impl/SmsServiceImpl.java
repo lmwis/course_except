@@ -1,7 +1,7 @@
 package com.fehead.service.impl;
 
-import com.fehead.error.BusinessException;
-import com.fehead.error.EmBusinessError;
+import com.fehead.lang.error.BusinessException;
+import com.fehead.lang.error.EmBusinessError;
 import com.fehead.properties.SecurityProperties;
 import com.fehead.service.RedisService;
 import com.fehead.service.SmsService;

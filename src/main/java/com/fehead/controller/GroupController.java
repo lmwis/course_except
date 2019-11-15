@@ -5,13 +5,13 @@ import com.fehead.dao.GroupMapper;
 import com.fehead.dao.UserMapper;
 import com.fehead.dao.entity.Group;
 import com.fehead.dao.entity.User;
-import com.fehead.error.BusinessException;
-import com.fehead.error.EmBusinessError;
-import com.fehead.response.CommonReturnType;
-import com.fehead.response.FeheadResponse;
+import com.fehead.lang.controller.BaseController;
+import com.fehead.lang.error.BusinessException;
+import com.fehead.lang.error.EmBusinessError;
+import com.fehead.lang.response.CommonReturnType;
+import com.fehead.lang.response.FeheadResponse;
 import com.fehead.utils.RandomUtil;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.binding.BindingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +37,7 @@ public class GroupController extends BaseController {
 
     @PostMapping()
     @ApiOperation("创建组织与部门")
-    public FeheadResponse createGroup(@RequestParam("user_id") int userId,String name,@RequestParam("branch_name") String branchName) throws BusinessException {
+    public FeheadResponse createGroup(@RequestParam("user_id") int userId, String name, @RequestParam("branch_name") String branchName) throws BusinessException {
         if(!validateNull(name,branchName)){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }

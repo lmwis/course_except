@@ -1,8 +1,6 @@
 package com.fehead.validate;
 
 import com.fehead.compoment.NoClassGenerator;
-import com.fehead.error.BusinessException;
-import com.fehead.error.EmBusinessError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,7 +1,7 @@
 package com.fehead.service;
 
 
-import com.fehead.error.BusinessException;
+import com.fehead.lang.error.BusinessException;
 
 /**
  * 写代码 敲快乐

@@ -1,10 +1,12 @@
 package com.fehead.controller;
 
-import com.fehead.error.BusinessException;
-import com.fehead.error.EmBusinessError;
+
+import com.fehead.lang.controller.BaseController;
+import com.fehead.lang.error.BusinessException;
+import com.fehead.lang.error.EmBusinessError;
+import com.fehead.lang.response.CommonReturnType;
+import com.fehead.lang.response.FeheadResponse;
 import com.fehead.properties.SecurityProperties;
-import com.fehead.response.CommonReturnType;
-import com.fehead.response.FeheadResponse;
 import com.fehead.service.RedisService;
 import com.fehead.service.SmsService;
 import com.fehead.service.model.ValidateCode;
