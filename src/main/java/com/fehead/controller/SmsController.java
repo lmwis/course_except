@@ -10,7 +10,6 @@ import com.fehead.properties.SecurityProperties;
 import com.fehead.service.RedisService;
 import com.fehead.service.SmsService;
 import com.fehead.service.model.ValidateCode;
-import com.fehead.utils.CheckEmailAndTelphoneUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import util.CheckEmailAndTelphoneUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -100,8 +100,8 @@ public class SmsController extends BaseController {
                 }
             }
         } else if (action.equals(SmsAction.RESET.actionStr)) {
-            if (smsService.check(securityProperties.getSmsProperties().getLoginPreKeyInRedis() + telphone)) {
-                ValidateCode code = (ValidateCode) redisService.get(securityProperties.getSmsProperties().getLoginPreKeyInRedis() + telphone);
+            if (smsService.check(securityProperties.getSmsProperties().getResetPreKeyInRedis() + telphone)) {
+                ValidateCode code = (ValidateCode) redisService.get(securityProperties.getSmsProperties().getResetPreKeyInRedis() + telphone);
                 if (!code.isExpired(60)) {
                     logger.info("验证码已发送");
                     throw new BusinessException(EmBusinessError.SMS_ALREADY_SEND);

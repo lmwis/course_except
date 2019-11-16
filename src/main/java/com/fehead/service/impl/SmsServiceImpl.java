@@ -100,6 +100,6 @@ public class SmsServiceImpl implements SmsService {
             default:
                 break;
         }
-//        smsUtil.sendSms(modelName, paramMap, telphone);
+        smsUtil.sendSms(modelName, paramMap, telphone);
     }
 }

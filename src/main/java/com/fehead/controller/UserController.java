@@ -11,7 +11,6 @@ import com.fehead.lang.error.EmBusinessError;
 import com.fehead.lang.response.CommonReturnType;
 import com.fehead.lang.response.FeheadResponse;
 import com.fehead.service.RedisService;
-import com.fehead.utils.CheckEmailAndTelphoneUtil;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
