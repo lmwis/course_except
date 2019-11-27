@@ -11,6 +11,10 @@
     <relativePath/>
   </parent>
 
+  <properties>
+    <fehead-common-version>1.0-SNAPSHOT</fehead-common-version>
+  </properties>
+
   <groupId>com.fehead</groupId>
   <artifactId>course-except</artifactId>
   <version>1.3-SNAPSHOT</version>
@@ -59,7 +63,7 @@
     <dependency>
       <groupId>com.fehead.open</groupId>
       <artifactId>fehead-common</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${fehead-common-version}</version>
     </dependency>
 
     <dependency>

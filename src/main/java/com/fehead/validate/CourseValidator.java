@@ -23,7 +23,7 @@ public class CourseValidator {
      * @return
      */
     public boolean validatePeriod(int period){
-        if (Integer.parseInt(noClassGenerator.transPeriod(period)) != 0) { // 节数格式不合法
+        if (Integer.parseInt(noClassGenerator.transPeriod(period)) == 0) { // 节数格式不合法
             return true;
         }
         return false;
@@ -37,7 +37,7 @@ public class CourseValidator {
      */
     public boolean validateWeeks(String weeks){
         char[] chars = weeks.toCharArray();
-        if (chars.length == 20) { // 长度必须为20
+        if (chars.length != 20) { // 长度必须为20
             return true;
         }
         return false;
@@ -51,7 +51,7 @@ public class CourseValidator {
      */
     public boolean validateWeek(String week){
         // 星期校验
-        if (Integer.parseInt(noClassGenerator.transWeek(week)) != 0) { // 周不合法
+        if (Integer.parseInt(noClassGenerator.transWeek(week)) == 0) { // 周不合法
             return true;
         }
         return false;
