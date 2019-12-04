@@ -108,7 +108,7 @@ public class GroupController extends BaseController {
         if(userId!=group.getUserId()){ // 权限判断
             throw new BusinessException(EmBusinessError.SERVICE_REQUIRE_ROLE_ADMIN);
         }
-        group.setGroupKey(name);
+        group.setGroupName(name);
         group.setBranchName(branchName);
         groupMapper.updateById(group);
 
