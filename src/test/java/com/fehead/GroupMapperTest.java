@@ -1,8 +1,7 @@
 package com.fehead;
 
-import com.fehead.service.CourseService;
-import com.fehead.dao.GroupMapper;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import com.fehead.course.service.CourseService;
+import com.fehead.course.dao.GroupMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

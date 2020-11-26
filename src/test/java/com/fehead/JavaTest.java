@@ -18,6 +18,91 @@ public class JavaTest {
         System.out.println(c);
     }
 
+    @Test
+    public void TestConvertWeeksTestFromWeeks(){
+        String weeks = "11011111100000000000";
+        System.out.println(convertWeeksTestFromWeeks1(weeks));
+    }
+
+    /**
+     * 00011111100000000000 ->1-6
+     * 11011111100000000000 -> 1-2,4-9
+     * 00011111100000000011
+     * @param weeks
+     * @return
+     */
+    private String convertWeeksTestFromWeeks1(String weeks) {
+        String text="";
+        for (int i=0;i<20;i++){
+            int start,end;
+            char c = weeks.charAt(i);
+            if(i>0 && i<19 && c=='1' && weeks.charAt(i-1)=='0'){
+                start = i+1;
+                text += start+"-";
+            }
+            if(i>0 && i<19 && c=='1' && weeks.charAt(i+1)=='0'){
+                end = i+1;
+                text +=end+",";
+            }
+        }
+        return text.substring(0,text.length()-1);
+    }
+
+    @Test
+    public void testParent(){
+        Son son = new Son();
+        System.out.println(son.money);
+//        Plane plane = getObjetc("1");
+        Plane plane = new Cat();
+        Plane plane1 = new Son();
+        plane.fly();
+    }
+
+    private Plane getObjetc(String w) {
+        if(w.equals("动物")){
+            return new Cat();
+        }else{
+            return new Son();
+        }
+    }
+
+    private String convertWeeksTestFromWeeks(String weeks) {
+        int start = 1;
+        String text = "";
+        boolean flag1 = false;
+        boolean flag2 = false;
+        for (int i = 0; i < 20; i++) {
+            if (weeks.charAt(i) == '0') {
+                flag1 = true;
+            }
+            if (weeks.charAt(i) == '1') {
+                flag2 = true;
+            }
+        }
+        if (!flag1) { // 表示全部为1
+            return "1-20";
+        }
+        if (!flag2) { // 表示全部为0
+            return "0";
+        }
+        for (int i = 0; i < 20; i++) {
+            char c = weeks.charAt(i);
+            if (i >= 1 && c == '0' && (weeks.charAt(i - 1) == '1')) { // 当前为0，上一个为1才有效
+
+                text += (start == i ? start : start + "-" + i) + ","; // 相同如：1-1 则简化为1
+            }
+            if (i >= 1 && c == '1' && (weeks.charAt(i - 1) == '0')) { // 当前为1，上一个为0才有效，移动头指针
+                start = i + 1;
+            }
+
+            if (i == 20 - 1 && c=='1') { // 扫描到最后若以1结尾
+                text += (start == 20 ? start : start + "-" + 20) + ",";;
+            }
+        }
+
+        return text.substring(0, text.length() - 1);
+    }
+
     public void CreateQRCode(){
         final int width = 300;
         final int height = 300;

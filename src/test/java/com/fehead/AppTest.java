@@ -2,16 +2,15 @@ package com.fehead;
 
 import static org.junit.Assert.assertTrue;
 
-import com.fehead.compoment.NoClassGenerator;
-import com.fehead.controller.vo.NoCourse4MutUsers;
-import com.fehead.dao.CourseMapper;
-import com.fehead.dao.UserMapper;
-import com.fehead.dao.entity.Course;
-import com.fehead.dao.entity.NoCourse;
-import com.fehead.dao.entity.NoCourse4Group;
-import com.fehead.dao.entity.NoCoursePack;
-import com.fehead.service.impl.CourseServiceImpl;
-import com.fehead.utils.RandomUtil;
+import com.fehead.course.compoment.NoClassGenerator;
+import com.fehead.course.controller.vo.NoCourse4MutUsers;
+import com.fehead.course.dao.CourseMapper;
+import com.fehead.course.dao.UserMapper;
+import com.fehead.course.dao.entity.Course;
+import com.fehead.course.dao.entity.NoCourse4Group;
+import com.fehead.course.dao.entity.NoCoursePack;
+import com.fehead.course.service.impl.CourseServiceImpl;
+import com.fehead.course.utils.RandomUtil;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -136,7 +135,7 @@ public class AppTest
          * 10000111111111111110 -> 1,6-20
          *
          */
-        String weeks = "10100111111111000011";
+        String weeks = "11110000000000000000";
         System.out.println(noClassGenerator.convertWeeksTestFromWeeks(weeks));
 
     }
