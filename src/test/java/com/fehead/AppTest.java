@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -139,6 +140,51 @@ public class AppTest
         System.out.println(noClassGenerator.convertWeeksTestFromWeeks(weeks));
 
     }
+
+    @Test
+    public void whenSelectUsersCourse(){
+//        courseMapper.selectByUserId(1).forEach(System.out::println);
+        courseService.selectByUserId(1).forEach(k->{
+            System.out.println(new ReflectionToStringBuilder(k));
+        });
+    }
+
+    @Test
+    public void whenTransCourseIdToObject(){
+        Set<String> ids = new HashSet<>();
+        ids.add("0111");
+        ids.add("0211");
+        ids.add("0311");
+        Set<Course> courses = transToObject(ids);
+        courses.forEach(k->{
+            System.out.println(new ReflectionToStringBuilder(k));
+        });
+    }
+
+    private Set<Course> transToObject(Set<String> strId) {
+        Set<Course> courses = new HashSet<>();
+        for (String s : strId) {
+            Course course = new Course();
+
+            String weeks = s.substring(0, 2);
+            String week = s.substring(2, 3);
+            String period = s.substring(3, 4);
+            String convertWeeks = noClassGenerator.convertWeeks(new Integer(weeks) - 1);
+            String convertWeek = noClassGenerator.convertWeek(new Integer(week) - 1);
+            int convertPeriod = noClassGenerator.convertPeriod(new Integer(period) - 1);
+            course.setWeeks(convertWeeks);
+            course.setWeek(convertWeek);
+            course.setPeriod(convertPeriod);
+            System.out.println(new ReflectionToStringBuilder(course));
+
+            boolean add = courses.add(course);
+            System.out.println(add);
+        }
+
+        return courses;
+
+    }
+
 
 
 }

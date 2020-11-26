@@ -17,6 +17,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @MapperScan("com.fehead.course.dao")
 @EnableSwagger2
 @EnableAsync
+//@EnableEurekaClient
 public class CourseApplication {
 
     public static void main( String[] args ) {

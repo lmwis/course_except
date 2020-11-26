@@ -1,6 +1,9 @@
 package com.fehead.course.authentication;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,16 +46,21 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         if (token != null) {
-            // parse the token.
-            String user = Jwts.parser()
-                    .setSigningKey("MyJwtSecret")
-                    .parseClaimsJws(token.replace("Bearer ", ""))
-                    .getBody()
-                    .getSubject();
+            try {
+                // parse the token.
+                String user = Jwts.parser()
+                        .setSigningKey("MyJwtSecret")
+                        .parseClaimsJws(token.replace("Bearer ", ""))
+                        .getBody()
+                        .getSubject();
 
-            if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                if (user != null) {
+                    return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                }
+            } catch (SignatureException | ExpiredJwtException | MalformedJwtException e){ // jwt无效
+                return null;
             }
+
             return null;
         }
         return null;

@@ -2,6 +2,7 @@ package com.fehead;
 
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 
 /**
@@ -104,6 +105,7 @@ public class JavaTest {
     }
 
     public void CreateQRCode(){
+//        BigInteger
         final int width = 300;
         final int height = 300;
         final String format = "png";

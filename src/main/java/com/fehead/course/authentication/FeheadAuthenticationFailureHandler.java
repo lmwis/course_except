@@ -41,11 +41,11 @@ public class FeheadAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
         FeheadAuthenticationSuccessHandler.setCORS(response);
 
-            response.setStatus(HttpStatus.OK.value());
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(objectMapper
                     .writeValueAsString( AuthenticationReturnType
                             .create(exception.getMessage()
-                                    ,HttpStatus.OK.value())));
+                                    ,HttpStatus.FORBIDDEN.value())));
     }
 }

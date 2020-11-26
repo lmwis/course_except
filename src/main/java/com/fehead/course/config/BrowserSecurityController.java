@@ -45,7 +45,7 @@ public class BrowserSecurityController {
     public FeheadResponse requireAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws IOException {
 
-        System.out.println("========");
+//        System.out.println("========");
 //        SavedRequest savedRequest = requestCache.getRequest(request, response);
 //        if (savedRequest != null) {
 //            String targetUrl = savedRequest.getRedirectUrl();

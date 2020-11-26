@@ -1,5 +1,6 @@
 package com.fehead.course.controller;
 
+
 import com.fehead.lang.controller.BaseController;
 import com.fehead.lang.error.BusinessException;
 import com.fehead.lang.error.EmBusinessError;
@@ -99,8 +100,8 @@ public class SmsController extends BaseController {
                 }
             }
         } else if (action.equals(SmsAction.RESET.actionStr)) {
-            if (smsService.check(securityProperties.getSmsProperties().getLoginPreKeyInRedis() + telphone)) {
-                ValidateCode code = (ValidateCode) redisService.get(securityProperties.getSmsProperties().getLoginPreKeyInRedis() + telphone);
+            if (smsService.check(securityProperties.getSmsProperties().getResetPreKeyInRedis() + telphone)) {
+                ValidateCode code = (ValidateCode) redisService.get(securityProperties.getSmsProperties().getResetPreKeyInRedis() + telphone);
                 if (!code.isExpired(60)) {
                     logger.info("验证码已发送");
                     throw new BusinessException(EmBusinessError.SMS_ALREADY_SEND);
