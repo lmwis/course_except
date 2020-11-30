@@ -133,7 +133,7 @@ public class GroupController extends BaseController {
         Group group = groupMapper.selectByKey(key);
         try {
             if(groupMapper.selectUserIdAndGroupIdEqu(userId,group.getId())!=0){ // 判断是否已经加入
-                throw new BusinessException(EmBusinessError.USER_ALREAY_EXIST,"已经加入该组织");
+                throw new BusinessException(EmBusinessError.USER_ALREADY_EXIST,"已经加入该组织");
             }
         }catch (BindingException exception){    // 表示未加入组织
             if(group==null){ // 密钥不符合

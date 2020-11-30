@@ -1,10 +1,6 @@
 package com.fehead.course.validate;
 
-<<<<<<< HEAD:src/main/java/com/fehead/course/validate/CourseValidator.java
 import com.fehead.course.compoment.NoClassGenerator;
-=======
-import com.fehead.compoment.NoClassGenerator;
->>>>>>> 392b3d47804a5648fb64381f803441ac77adadd3:src/main/java/com/fehead/validate/CourseValidator.java
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

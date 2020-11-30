@@ -1,9 +1,6 @@
-package com.fehead;
+package com.fehead.course;
 
 import org.junit.Test;
-
-import java.math.BigInteger;
-import java.util.HashMap;
 
 /**
  * @author lmwis

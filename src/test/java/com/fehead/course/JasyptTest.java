@@ -1,4 +1,4 @@
-package com.fehead;
+package com.fehead.course;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.EnvironmentPBEConfig;

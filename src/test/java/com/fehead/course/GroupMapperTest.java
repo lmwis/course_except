@@ -1,4 +1,4 @@
-package com.fehead;
+package com.fehead.course;
 
 import com.fehead.course.service.CourseService;
 import com.fehead.course.dao.GroupMapper;

@@ -80,11 +80,11 @@ public class UserController extends BaseController {
                 // 注册流程
                 User user1 = userMapper.selectByUsername(nickname);
                 if (user1 != null) { // 昵称不能重复
-                    throw new BusinessException(EmBusinessError.USER_ALREAY_EXIST);
+                    throw new BusinessException(EmBusinessError.USER_ALREADY_EXIST);
                 }
                 user1 = userMapper.selectByUserTel(tel);
                 if (user1 != null) { // 手机号不能重复
-                    throw new BusinessException(EmBusinessError.USER_ALREAY_EXIST);
+                    throw new BusinessException(EmBusinessError.USER_ALREADY_EXIST);
                 }
 
                 user.setTel(tel);

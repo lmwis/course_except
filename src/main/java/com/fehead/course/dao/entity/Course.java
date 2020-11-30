@@ -22,11 +22,7 @@ public class Course extends NoCourse{
 
     private String weeksText;
 
-<<<<<<< HEAD:src/main/java/com/fehead/course/dao/entity/Course.java
     public long getId() {
-
-
-
         return id;
     }
 
@@ -42,6 +38,4 @@ public class Course extends NoCourse{
     public void setWeeksText(String weeksText) {
         this.weeksText = weeksText;
     }
-=======
->>>>>>> 392b3d47804a5648fb64381f803441ac77adadd3:src/main/java/com/fehead/dao/entity/Course.java
 }

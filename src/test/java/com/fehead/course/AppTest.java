@@ -1,6 +1,4 @@
-package com.fehead;
-
-import static org.junit.Assert.assertTrue;
+package com.fehead.course;
 
 import com.fehead.course.compoment.NoClassGenerator;
 import com.fehead.course.controller.vo.NoCourse4MutUsers;
