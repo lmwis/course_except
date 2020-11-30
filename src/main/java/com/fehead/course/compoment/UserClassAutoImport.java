@@ -45,7 +45,7 @@ public class UserClassAutoImport {
 
     private static final Logger logger = LoggerFactory.getLogger(UserClassAutoImport.class);
 
-    private static final String LOGIN_CAS_URL="http://login.sust.edu.cn/cas/login?service=http%3A%2F%2Fmy.sust.edu.cn%2Fc%2Fportal%2Flogin";
+    private static final String LOGIN_CAS_URL="http://login.sust.edu.cn/cas/login?service=http%3A%2F%2Fbkjw.sust.edu.cn%3A80%2Feams%2Fsso%2Flogin.action%3FtargetUrl%3Dbase64aHR0cDovL2Jrancuc3VzdC5lZHUuY246ODAvZWFtcy9ob21lLmFjdGlvbg%3D%3D";
     private static final String COURSE_INFO_URL="http://bkjw.sust.edu.cn/eams/studentCourseTable!courseTable.action?setting.kind=class&setting.forSemester=1&semester.id=102&ids=3505";
     private static final String CURRENTMENU_KEY="currentMenu";
     private static final String _EVENTID_KEY="_eventId";
@@ -100,8 +100,8 @@ public class UserClassAutoImport {
 //        HttpCookie semesterIdCookie = new HttpCookie("semester.id","102");
 //        httpRequest.cookie(jsessionidCookie,gsessinoidCookie,qingcloudelbCookie,semesterIdCookie).setFollowRedirects(false);
 //        httpRequest.cookie(jsessionidCookie,gsessinoidCookie,semesterIdCookie).setFollowRedirects(false);
-        String cookieStr="semester.id=102;JSESSIONID="+jsessionid+";GSESSIONID="+jsessionid;
-        httpRequest.header("Cookie",cookieStr);
+//        String cookieStr="semester.id=102;JSESSIONID="+jsessionid+";GSESSIONID="+jsessionid;
+//        httpRequest.header("Cookie",cookieStr);
         logger.info(httpRequest.toString());
         HttpResponse body = httpRequest.execute();
         logger.info(body.toString());
