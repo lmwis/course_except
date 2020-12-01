@@ -19,15 +19,15 @@ import java.util.regex.Pattern;
 /**
  * @Description: 课表自动导入
  * 流程：
- * 1.访问 http://login.sust.edu.cn/cas/login?service=http%3A%2F%2Fmy.sust.edu.cn%2Fc%2Fportal%2Flogin
- * ，从页面中解析 currentMenu execution _eventId geolocation submit字段
- * 2.再次post访问 http://login.sust.edu.cn/cas/login?service=http%3A%2F%2Fmy.sust.edu.cn%2Fc%2Fportal%2Flogin
- * 带上用户名密码参数进行表单提交
- * 3.从步骤2返回的header中拿到Location，向Location发送Get请求
- * 4.从步骤3返回header中拿到 JSESSIONID，
- * 5.设置JSESSIONID cookie，向课表页面请求数据
- * 6.解析js代码获得课表
- *
+ * 1.第一次请求登录页，从页面隐藏中解析出execution值
+ * 2.第二次请求登录页，执行登录，获取Location请求头和TGC
+ * 3.Get访问Location,获取JSESSIONID，JSESSIONID会自动加入cookie中
+ * 4.登录成功后再获取课表页面之前需要预先进行一次请求，原因不详。以下两种请求均可
+ * 5.获取用户课表url
+ * 6.获取用户课表页面
+ * 7.解析出用户的每节课程信息
+ * 8.转化为系统中课程数据
+ * 9.生成无课表
  * (?<=name:").*?(?=")
  * <(input type="hidden" name="execution" value="")[^>]*>.*?
  * (?<=<input type="hidden" name="execution" value=").*?(?=")
@@ -55,16 +55,25 @@ public class UserClassAutoImport {
     private static final String VALUE_2="submit";
     private static final String GEOLOCATION="";
     private static final String SUBMIT="%E7%A8%8D%E7%AD%89%E7%89%87%E5%88%BB%E2%80%A6%E2%80%A6";
-    private static final String USERNAME="201806020527";
-    private static final String PASSWORD="conanyuan1.";
+    private String username;
+    private String password;
     // 从页面获取
-    private static String execution;
+    private String execution;
     private static final String EXECUTION_KEY = "execution";
     private static final String executionRegex = "(?<=<input type=\"hidden\" name=\"execution\" value=\").*?(?=\")";
     private static final String courseGuideRegex = "(?<=<a href=\").*?(?=\" target=\"_blank\" title=\"查看学生课表\">)";
-    private static String userCourseInfoUrl;
+    private String userCourseInfoUrl;
 
-    public void prepareCASLogin() throws BusinessException {
+    /**
+     * 登录系统拿到用户课表html
+     * @param username 学号
+     * @param password 密码
+     * @throws BusinessException 业务异常
+     */
+    public void prepareCASLogin(String username,String password) throws BusinessException {
+        this.username = username;
+        this.password = password;
+
         // 1.第一次请求登录页，从页面隐藏中解析出execution值
         String result1= HttpUtil.get(LOGIN_CAS_URL);
         // 正则匹配
@@ -93,7 +102,7 @@ public class UserClassAutoImport {
         // 解析出url
         Pattern courseGuidePattern = Pattern.compile(courseGuideRegex, Pattern.DOTALL);
         Matcher courseGuideMatcher = courseGuidePattern.matcher(userCourseGuide);
-        String userCourseUrlTemp="";
+        String userCourseUrlTemp;
         if (courseGuideMatcher.find()) {
             userCourseUrlTemp= courseGuideMatcher.group();
         }else {
@@ -114,12 +123,12 @@ public class UserClassAutoImport {
 
     /**
      * 封装查询用户课表url的post请求参数
-     * @return
+     * @return params
      */
     private Map<String, Object> packageUserCourseQueryParams() {
         Map<String,Object> params = new HashMap<>();
         params.put("std.project.id","1");
-        params.put("std.code",USERNAME);
+        params.put("std.code",username);
         params.put("std.name","");
         params.put("std.grade","");
         params.put("std.department.id","");
@@ -133,12 +142,12 @@ public class UserClassAutoImport {
 
     /**
      * 封装login的post请求参数
-     * @return
+     * @return params
      */
     private Map<String, Object> packageLoginParams() {
         Map<String,Object> params = new HashMap<>();
-        params.put("username",USERNAME);
-        params.put("password",PASSWORD);
+        params.put("username",username);
+        params.put("password",password);
         params.put(KEY_1,VALUE_1);
         params.put(KEY_2,VALUE_2);
         params.put(GEOLOCATION_KEY,GEOLOCATION);
