@@ -3,6 +3,7 @@ package com.fehead.course.auto;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpUtil;
 import com.fehead.course.compoment.UserClassAutoImport;
+import com.fehead.lang.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,7 @@ public class UserClassTest {
     }
 
     @Test
-    public void doPostLogin(){
+    public void doPostLogin() throws BusinessException {
         userClassAutoImport.prepareCASLogin();
     }
 
