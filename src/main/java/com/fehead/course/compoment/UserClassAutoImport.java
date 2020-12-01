@@ -4,14 +4,18 @@ import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import com.fehead.course.compoment.model.SustCourse;
 import com.fehead.lang.error.BusinessException;
 import com.fehead.lang.error.EmBusinessError;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,6 +67,9 @@ public class UserClassAutoImport {
     private static final String executionRegex = "(?<=<input type=\"hidden\" name=\"execution\" value=\").*?(?=\")";
     private static final String courseGuideRegex = "(?<=<a href=\").*?(?=\" target=\"_blank\" title=\"查看学生课表\">)";
     private String userCourseInfoUrl;
+    // 课程html
+    private String courseHtml;
+    CourseResolve courseResolve;
 
     /**
      * 登录系统拿到用户课表html
@@ -70,7 +77,7 @@ public class UserClassAutoImport {
      * @param password 密码
      * @throws BusinessException 业务异常
      */
-    public void prepareCASLogin(String username,String password) throws BusinessException {
+    public UserClassAutoImport prepareCASLogin(String username,String password) throws BusinessException {
         this.username = username;
         this.password = password;
 
@@ -115,10 +122,13 @@ public class UserClassAutoImport {
         }
         // 拼装最终当前用户课表地址
         userCourseInfoUrl = HOST+userCourseUrlBuffer.toString();
-        logger.info(userCourseInfoUrl);
+//        logger.info(userCourseInfoUrl);
         // 6.获取用户课表页面
-        HttpResponse courseHtml = HttpRequest.get(userCourseInfoUrl).execute();
-        logger.info(courseHtml.toString());
+        courseHtml = HttpRequest.get(userCourseInfoUrl).execute().toString();
+
+        this.courseResolve = new CourseResolve(courseHtml);
+//        logger.info(courseHtml.);
+        return this;
     }
 
     /**
@@ -156,4 +166,73 @@ public class UserClassAutoImport {
         return params;
     }
 
+    public List<SustCourse> doResolve(){
+        return courseResolve.doResolve();
+    }
+
+    private class CourseResolve{
+
+        final String courseHtml;
+
+        CourseResolve(String courseHtml){
+            this.courseHtml = courseHtml;
+//            logger.info(courseHtml);
+        }
+
+        private final String teacherNameRegx = "(?<=teachers.{0,100}?.name:\").{0,100}?(?=\")";
+        private final String courseInfoRegx="(?<=TaskActivity.{0,100}\").{0,1000}?(?=;)";
+        private final String jsCourseRegx = "(?<=activity=null;)[\\s\\S]*(?=activity;)";
+        private final String oneCourseRegx = "var teachers[\\s\\S]*?table0";
+        private final String courseTimeRegx = "index.{0,100}?([0-9]).{0,100}?([0-9]);";
+//        private final String classroomRegx;
+//        private final String weeksRegx;
+//        private final String classTimeRegx;
+
+        List<SustCourse> doResolve(){
+            List<SustCourse> sustCourseList = new ArrayList<>();
+            // 获取全部js代码
+            String jsCourse = execRegxGroup0(courseHtml,jsCourseRegx);
+            // 按照课程切分
+            List<String> courses = execRegxGroups(jsCourse, oneCourseRegx);
+            courses.forEach(k->{
+                SustCourse sustCourse = new SustCourse();
+                sustCourse.setTeacherName(execRegxGroup0(k, teacherNameRegx));
+                // 其他信息
+                String courseInfos = execRegxGroup0(k, courseInfoRegx);
+                String[] split = courseInfos.split(",");
+                sustCourse.setCourseName(split[1].substring(1,split[1].indexOf("(")));
+                sustCourse.setClassroom(split[3].substring(1,split[3].lastIndexOf("\"")));
+                sustCourse.setWeeks(split[4].substring(1,21));
+
+                Matcher matcher = Pattern.compile(k, Pattern.DOTALL).matcher(courseTimeRegx);
+                sustCourse.setClassTime(new Integer(matcher.group(0))*11+new Integer(matcher.group(1)));
+                sustCourseList.add(sustCourse);
+            });
+            return sustCourseList;
+        }
+
+        private String execRegxGroup0(String content,String regx){
+            String res="";
+            // 正则匹配
+            Matcher matcher = Pattern.compile(regx, Pattern.DOTALL).matcher(content);
+            if (matcher.find()) {
+                res= matcher.group();
+            }
+            return res;
+        }
+        private List<String> execRegxGroups(String content,String regx){
+            List<String> lists = new ArrayList<>();
+            // 正则匹配
+            Matcher matcher = Pattern.compile(regx, Pattern.DOTALL).matcher(content);
+            while(matcher.find()){
+                lists.add(matcher.group());
+            }
+            return lists;
+        }
+
+    }
+
+    public CourseResolve getCourseResolve() {
+        return courseResolve;
+    }
 }

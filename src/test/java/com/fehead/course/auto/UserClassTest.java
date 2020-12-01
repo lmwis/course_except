@@ -3,6 +3,7 @@ package com.fehead.course.auto;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpUtil;
 import com.fehead.course.compoment.UserClassAutoImport;
+import com.fehead.course.compoment.model.SustCourse;
 import com.fehead.lang.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
@@ -40,8 +41,9 @@ public class UserClassTest {
     }
 
     @Test
-    public void doPostLogin() throws BusinessException {
-        userClassAutoImport.prepareCASLogin();
+    public void doGetUserClass() throws BusinessException {
+        userClassAutoImport.prepareCASLogin("201806020527", "conanyuan1.")
+                .doResolve().forEach(System.out::println);
     }
 
 }
