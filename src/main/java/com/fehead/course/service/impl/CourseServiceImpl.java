@@ -2,6 +2,8 @@ package com.fehead.course.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fehead.course.compoment.NoClassGenerator;
+import com.fehead.course.compoment.UserClassAutoImport;
+import com.fehead.course.compoment.model.SustCourse;
 import com.fehead.course.controller.CourseController;
 import com.fehead.course.controller.vo.NoCourse4MutUsers;
 import com.fehead.course.dao.CourseMapper;
@@ -10,15 +12,17 @@ import com.fehead.course.dao.NoCourseMapper;
 import com.fehead.course.dao.NoCoursePackMapper;
 import com.fehead.course.dao.entity.*;
 import com.fehead.course.service.CourseService;
+import com.fehead.lang.error.BusinessException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author lmwis
- * @description:
+ * @description: Course服务实现类
  * @date 2019-09-07 11:45
  * @Version 1.0
  */
@@ -39,6 +43,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     NoCourseMapper noCourseMapper;
+
+    @Autowired
+    UserClassAutoImport userClassAutoImport;
 
     @Override
     public List<Course> selectByUserId(int userId) {
@@ -275,5 +282,32 @@ public class CourseServiceImpl implements CourseService {
         QueryWrapper<NoCoursePack> noCoursePackQueryWrapper = new QueryWrapper<>();
         noCoursePackQueryWrapper.eq("user_id",userId);
         noCoursePackMapper.delete(noCoursePackQueryWrapper);
+    }
+
+    /**
+     * 从教务处拉取
+     * 封装为Course类型
+     * @param username
+     * @param password
+     * @return
+     * @throws BusinessException
+     */
+    @Override
+    public List<Course> getUserCourseFromSust(String username, String password) throws BusinessException {
+        List<SustCourse> sustCourseList = userClassAutoImport.prepareCASLogin(username, password).doResolve();
+        List<Course> courseList = new ArrayList<>();
+        sustCourseList.forEach(k-> courseList.add(convertFromSustCourse(k)));
+        return courseList;
+    }
+
+    /**
+     * 类型转化
+     * @param sustCourse
+     * @return
+     */
+    private Course convertFromSustCourse(SustCourse sustCourse){
+        Course course = new Course();
+        course.setWeek(sustCourse.getWeeks());
+        return course;
     }
 }

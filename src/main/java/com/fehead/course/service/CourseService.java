@@ -1,16 +1,18 @@
 package com.fehead.course.service;
 
+import com.fehead.course.compoment.model.SustCourse;
 import com.fehead.course.controller.vo.NoCourse4MutUsers;
 import com.fehead.course.dao.entity.Course;
 import com.fehead.course.dao.entity.NoCourse4Group;
 import com.fehead.course.dao.entity.NoCoursePack;
+import com.fehead.lang.error.BusinessException;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
  * @author lmwis
- * @description:
+ * @description: Course服务接口类
  * @date 2019-09-07 11:44
  * @Version 1.0
  */
@@ -33,4 +35,6 @@ public interface CourseService {
     public void savePackNoClass(Collection<NoCoursePack> resNoCourse);
 
     void deleteUserNoClassPack(long userId);
+
+    List<Course> getUserCourseFromSust(String username, String password) throws BusinessException;
 }

@@ -6,6 +6,8 @@ import com.fehead.course.dao.CourseMapper;
 import com.fehead.course.dao.NoCourseMapper;
 import com.fehead.course.dao.entity.Course;
 import com.fehead.course.dao.entity.NoCourse;
+import lombok.RequiredArgsConstructor;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +20,12 @@ import java.util.*;
  * @Version 1.0
  */
 @Component
+@MapperScan("{com.fehead.course.dao}")
 public class NoClassGenerator {
 
-    public NoClassGenerator() {
+    public NoClassGenerator(CourseMapper courseMapper,NoCourseMapper noCourseMapper) {
+        this.courseMapper = courseMapper;
+        this.noCourseMapper = noCourseMapper;
         allClassInit(); //初始化
     }
 
@@ -36,11 +41,9 @@ public class NoClassGenerator {
         this.courseStrId = courseStrId;
     }
 
-    @Autowired
-    CourseMapper courseMapper;
+    final CourseMapper courseMapper;
 
-    @Autowired
-    NoCourseMapper noCourseMapper;
+    final NoCourseMapper noCourseMapper;
 
 
 //    public Course transToObject(String strId){

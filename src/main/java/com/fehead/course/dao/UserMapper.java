@@ -2,6 +2,7 @@ package com.fehead.course.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fehead.course.dao.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -10,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
  * @date 2019-08-29 16:11
  * @Version 1.0
  */
+@Mapper
 public interface UserMapper extends BaseMapper<User> {
 
     @Select("select id,nickname,tel,password_id from user_info where nickname=#{username}")

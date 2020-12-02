@@ -3,10 +3,7 @@ package com.fehead.course.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fehead.course.dao.entity.Group;
 import com.fehead.course.dao.entity.User;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -16,6 +13,7 @@ import java.util.List;
  * @date 2019-09-02 16:08
  * @Version 1.0
  */
+@Mapper
 public interface GroupMapper extends BaseMapper<Group> {
 
 

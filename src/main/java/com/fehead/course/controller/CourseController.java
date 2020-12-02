@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fehead.course.compoment.NoClassGenerator;
 import com.fehead.course.compoment.UserGeneratorNoClassTask;
+import com.fehead.course.compoment.model.SustCourse;
 import com.fehead.course.dao.CourseMapper;
 import com.fehead.course.dao.UserMapper;
 import com.fehead.course.dao.entity.Course;
@@ -31,7 +32,7 @@ import java.util.List;
 
 /**
  * @author lmwis
- * @description:
+ * @description: 处理课程信息相关的请求
  * @date 2019-09-02 11:42
  * @Version 1.0
  */
@@ -69,63 +70,6 @@ public class CourseController extends BaseController {
     @Autowired
     CourseValidator courseValidator; // 课程校验器
 
-
-//    /**
-//     * 创建新的课程单元
-//     * @param userId
-//     * @param week
-//     * @param period
-//     * @param weeks
-//     * @return
-//     * @throws BusinessException
-//     */
-//    @PostMapping()
-//    @ApiOperation("创建一个课程单元 exp: week(周一) period(1) weeks(11111111110001111000)")
-//    public FeheadResponse createCourse(@RequestParam("user_id") String userId, String week
-//            , String period, String weeks,@RequestParam("weeks_text") String weeksText) throws BusinessException {
-//
-//        if(!validateNull(userId,week,period,weeks)){
-//            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
-//        }
-//        if(userMapper.selectById(userId)==null){ // 用户检查
-//            throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
-//        }
-//        // weeks校验
-//        char[] chars = weeks.toCharArray();
-//        if(chars.length!=20){ // 格式不合法
-//            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
-//        }
-//        QueryWrapper<Course> queryWrapper = new QueryWrapper<>();
-//
-//        queryWrapper.eq("user_id",userId);
-//        queryWrapper.eq("week",week);
-//        queryWrapper.eq("weeks",weeks);
-//        queryWrapper.eq("period",period);
-//        Course courseInSql = courseMapper.selectOne(queryWrapper);
-//        if (courseInSql!=null){ // 课程已经添加过了
-//            throw new BusinessException(EmBusinessError.USER_NOT_EXIST,"请勿重复添加相同的课程");
-//        }
-//        Course course = new Course();
-//        course.setUserId(new Integer(userId));
-//        course.setWeek(week);
-//        course.setPeriod(new Integer(period));
-//        course.setWeeks(weeks);
-//        course.setWeeksText(weeksText);
-//
-//
-//        // 线程保护
-//        synchronized (CourseController.class){
-//            courseMapper.insert(course);
-//        }
-//
-//        // 生成无课表
-//        // 后期交给消息队列去生成
-//        noClassGenerator.generateNoClass(new Integer(userId));
-//
-//        return CommonReturnType.create(course);
-//    }
-
-
     /**
      * 创建新的课程单元
      *
@@ -155,16 +99,16 @@ public class CourseController extends BaseController {
 //            String weeksText = addFormArrs[0].getWeeks_text();
 
             // weeks校验
-            if(courseValidator.validateWeeks(weeks)){
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"周次不合法");
+            if (courseValidator.validateWeeks(weeks)) {
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "周次不合法");
             }
             // period校验
-            if(courseValidator.validatePeriod(period)){// 节数格式不合法
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"节数格式不合法");
+            if (courseValidator.validatePeriod(period)) {// 节数格式不合法
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "节数格式不合法");
             }
             // 星期校验
-            if(courseValidator.validateWeek(week)){// 节数格式不合法
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"星期不合法");
+            if (courseValidator.validateWeek(week)) {// 节数格式不合法
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "星期不合法");
             }
 
             String weeksText = noClassGenerator.convertWeeksTestFromWeeks(weeks); // 将weeks转化为文本形式
@@ -240,21 +184,6 @@ public class CourseController extends BaseController {
         return CommonReturnType.create(courses);
 
     }
-
-
-//    @PutMapping("/")
-//    public FeheadResponse updateWeeks(int id,String weeks) throws BusinessException {
-//
-//        if(!validateNull(weeks)){
-//            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
-//        }
-//        Course course = courseMapper.selectById(id);
-//        course.setWeeks(weeks);
-//        courseMapper.updateById(course);
-//
-//        return CommonReturnType.create(null);
-//    }
-
     /**
      * 根据id获取信息
      *
@@ -299,8 +228,8 @@ public class CourseController extends BaseController {
             String weeksText = updateFormArr.getWeeks_text();
             if (updateFormArr.getId() <= 0) { //id小于0是需要添加的
                 // weeks校验
-                if(courseValidator.validateWeeks(weeks)){
-                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"周次不合法");
+                if (courseValidator.validateWeeks(weeks)) {
+                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "周次不合法");
                 }
                 // 数据校验
                 if (!validateNull(weeks, week, period, weeksText)) {
@@ -315,8 +244,8 @@ public class CourseController extends BaseController {
                 weeksText = noClassGenerator.convertWeeksTestFromWeeks(weeks);
 
                 // weeks校验
-                if(courseValidator.validateWeeks(weeks)){
-                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"周次不合法");
+                if (courseValidator.validateWeeks(weeks)) {
+                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "周次不合法");
                 }
                 // 数据校验
                 if (!validateNull(weeks, week, period, weeksText)) {
@@ -324,13 +253,13 @@ public class CourseController extends BaseController {
                 }
 
                 // period校验
-                if(courseValidator.validatePeriod(period)){// 节数格式不合法
-                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"节数格式不合法");
+                if (courseValidator.validatePeriod(period)) {// 节数格式不合法
+                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "节数格式不合法");
                 }
 
                 // 星期校验
-                if(courseValidator.validateWeek(week)){// 节数格式不合法
-                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"星期不合法");
+                if (courseValidator.validateWeek(week)) {// 节数格式不合法
+                    throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "星期不合法");
                 }
 
                 Course course = new Course();
@@ -357,19 +286,6 @@ public class CourseController extends BaseController {
 
         return CommonReturnType.create("修改成功");
     }
-//
-//    private String convertToWeekTemp(int index){
-//        String res = "";
-//        for(int i=0;i<20;i++){
-//            if(index==(i+1)){
-//                res+="1";
-//            }else{
-//                res+="0";
-//            }
-//        }
-//        return res;
-//    }
-
 
     @GetMapping("/user/{user_id}/week}")
     @ApiOperation("获取用户某星期的课程")
@@ -453,10 +369,26 @@ public class CourseController extends BaseController {
         if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
         }
-
-
         noClassGenerator.generateNoClass(userId);
 
         return CommonReturnType.create(null);
+    }
+
+    /**
+     * 导入教务处课表并生成无课表
+     * @return
+     */
+    @PostMapping("/no_class/generate/auto/{id}")
+    @ApiOperation("根据教务处课表自动获取用户课表，并异步生成无课表")
+    public FeheadResponse generateCourseAuto(@PathVariable("id") int userId,@ApiParam("教务系统登录账号") String username
+            ,@ApiParam("教务系统登录密码")String password) throws BusinessException {
+
+        if (userMapper.selectById(userId) == null) { // 用户检查
+            throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
+        }
+        List<Course> courseList = courseService.getUserCourseFromSust(username,password);
+
+        return CommonReturnType.create(null);
+
     }
 }

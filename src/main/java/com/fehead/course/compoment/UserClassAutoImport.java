@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -92,7 +93,16 @@ public class UserClassAutoImport {
         // 参数封装，发送请求
         Map<String, Object> params = packageLoginParams();
         // 2.第二次请求登录页，执行登录，获取Location请求头和TGC
+        // 登录成功状态码为302，失败为401
         HttpResponse execute = HttpRequest.post(LOGIN_CAS_URL).form(params).setFollowRedirects(false).execute();
+        if(execute.getStatus()== HttpStatus.UNAUTHORIZED.value()){
+            // 登录失败
+            throw new BusinessException(EmBusinessError.USER_LOGIN_FAIL);
+        }else if(execute.getStatus()!= HttpStatus.FOUND.value()){
+            // 不为302未知错误
+            throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
+        }
+        logger.info("登录成功");
         String location = execute.header(Header.LOCATION);
         // TGC会自动设置
 //        String tgc = execute.getCookie("TGC").getValue();
@@ -183,7 +193,9 @@ public class UserClassAutoImport {
         private final String courseInfoRegx="(?<=TaskActivity.{0,100}\").{0,1000}?(?=;)";
         private final String jsCourseRegx = "(?<=activity=null;)[\\s\\S]*(?=activity;)";
         private final String oneCourseRegx = "var teachers[\\s\\S]*?table0";
-        private final String courseTimeRegx = "index.{0,100}?([0-9]).{0,100}?([0-9]);";
+//        private final String courseTimeRegx = "index.{0,100}?([0-9]).{0,100}?([0-9]);";
+        private final String dayTimeRegx ="(?<=index =).{0,100}?(?=\\*)";
+        private final String whenTimeRegx ="(?<=unitCount\\+).{0,100}?(?=;)";
 //        private final String classroomRegx;
 //        private final String weeksRegx;
 //        private final String classTimeRegx;
@@ -203,9 +215,11 @@ public class UserClassAutoImport {
                 sustCourse.setCourseName(split[1].substring(1,split[1].indexOf("(")));
                 sustCourse.setClassroom(split[3].substring(1,split[3].lastIndexOf("\"")));
                 sustCourse.setWeeks(split[4].substring(1,21));
-
-                Matcher matcher = Pattern.compile(k, Pattern.DOTALL).matcher(courseTimeRegx);
-                sustCourse.setClassTime(new Integer(matcher.group(0))*11+new Integer(matcher.group(1)));
+                // 获取上课时间
+                int day = new Integer(execRegxGroup0(k, dayTimeRegx));
+                int when = new Integer(execRegxGroup0(k, whenTimeRegx));
+                // +1是为了不让下标从0开始
+                sustCourse.setClassTime(day*11+when+1);
                 sustCourseList.add(sustCourse);
             });
             return sustCourseList;
