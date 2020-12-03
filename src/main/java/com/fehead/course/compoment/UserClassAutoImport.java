@@ -5,6 +5,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import com.fehead.course.compoment.model.SustCourse;
+import com.fehead.course.error.EmCourseExceptError;
 import com.fehead.lang.error.BusinessException;
 import com.fehead.lang.error.EmBusinessError;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +98,7 @@ public class UserClassAutoImport {
         HttpResponse execute = HttpRequest.post(LOGIN_CAS_URL).form(params).setFollowRedirects(false).execute();
         if(execute.getStatus()== HttpStatus.UNAUTHORIZED.value()){
             // 登录失败
-            throw new BusinessException(EmBusinessError.USER_LOGIN_FAIL);
+            throw new BusinessException(EmCourseExceptError.SUST_JWC_LOGIN_FAIL);
         }else if(execute.getStatus()!= HttpStatus.FOUND.value()){
             // 不为302未知错误
             throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);

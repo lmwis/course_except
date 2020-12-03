@@ -376,11 +376,11 @@ public class CourseController extends BaseController {
     }
 
     /**
-     * 导入教务处课表并生成无课表
-     * @return
+     * 导入教务处课表并生成无课表，无课程详细信息
+     * @return 课程列表
      */
     @PostMapping("/generate/auto/{user_id}")
-    @ApiOperation("根据教务处课表自动获取用户课表，并异步生成无课表")
+    @ApiOperation("根据教务处课表自动获取用户课表(原来课表类型)，并异步生成无课表")
     public FeheadResponse generateCourseAuto(@PathVariable("user_id") int userId,@ApiParam("教务系统登录账号") String username
             ,@ApiParam("教务系统登录密码")String password) throws BusinessException {
         validateNull(username,password);
@@ -390,6 +390,17 @@ public class CourseController extends BaseController {
         List<Course> courseList = courseService.getUserCourseFromSust(username,password);
 
         return CommonReturnType.create(courseList);
+    }
 
+    @PostMapping("/generate/auto/new/{user_id}")
+    @ApiOperation("根据教务处课表自动获取用户课表(新课表类型)，并异步生成无课表")
+    public FeheadResponse generateNewTypeCourseAuto(@PathVariable("user_id") int userId,@ApiParam("教务系统登录账号") String username
+            ,@ApiParam("教务系统登录密码")String password) throws BusinessException {
+        validateNull(username,password);
+        if (userMapper.selectById(userId) == null) { // 用户检查
+            throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
+        }
+        List<Course> courseList = courseService.getUserCourseFromSust(username,password);
+        return CommonReturnType.create(courseList);
     }
 }

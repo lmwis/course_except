@@ -74,6 +74,7 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * 未完成
+     *
      * @param weeks
      * @param weeksNum
      * @return
@@ -87,12 +88,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
 
-
-
     /**
      * 获取封装好的无课表
-     *  从原始数据中进行封装
-     *  之后需要改成直接从封装好的数据库中查询
+     * 从原始数据中进行封装
+     * 之后需要改成直接从封装好的数据库中查询
+     *
      * @param userId
      * @return
      */
@@ -131,16 +131,18 @@ public class CourseServiceImpl implements CourseService {
 
         return resNoCourse;
     }
+
     /**
      * 获取封装好的无课表
-     *  从封装好的数据库中查询
+     * 从封装好的数据库中查询
+     *
      * @param userId
      * @return
      */
     public Collection<NoCoursePack> getUserNoClassPackFromDB(long userId) {
 
         QueryWrapper<NoCoursePack> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id",userId);
+        queryWrapper.eq("user_id", userId);
         List<NoCoursePack> noCoursePacks = noCoursePackMapper.selectList(queryWrapper);
 
         return noCoursePacks;
@@ -150,35 +152,37 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * 获取部门的无课表
-     *  指定周次 exp:第1周
+     * 指定周次 exp:第1周
+     *
      * @param groupId
      * @param weeks
      * @return
      */
     @Override
-    public Collection<NoCourse4Group> getGroupNoClassPackOrderByWeeks(int groupId,int weeks) {
+    public Collection<NoCourse4Group> getGroupNoClassPackOrderByWeeks(int groupId, int weeks) {
 
         Collection<NoCourse4Group> userAllNoClassPack = new HashSet<>();
 
         // 获取组织内所有的用户 不包括组织创建者
         List<User> users = groupMapper.selectAllUsersByGroupId(groupId);
         // 获取数据
-        userAllNoClassPack.addAll(getUserGroupNoClassPackOrderByWeeks(users,weeks));
+        userAllNoClassPack.addAll(getUserGroupNoClassPackOrderByWeeks(users, weeks));
 
         return userAllNoClassPack;
     }
 
     /**
      * 获取一群用户的无课表
-     *  指定周次 exp:第1周
+     * 指定周次 exp:第1周
+     *
      * @param users
      * @param weeks
      * @return
      */
-    private Collection<NoCourse4Group> getUserGroupNoClassPackOrderByWeeks(List<User> users,int weeks){
+    private Collection<NoCourse4Group> getUserGroupNoClassPackOrderByWeeks(List<User> users, int weeks) {
         Collection<NoCourse4Group> userNoClassPack4Group = new HashSet<>();
         // 每个用户的课表都进行遍历
-        for(User u : users){
+        for (User u : users) {
             // 获取用户无课表
 //            Collection<NoCoursePack> userNoClassPack = getUserNoClassPack(u.getId());
             // 从打包好的数据表中查询
@@ -189,7 +193,7 @@ public class CourseServiceImpl implements CourseService {
 //                    continue;
 //                }
                 // 周次筛选
-                if(!noClassGenerator.equalWeeks(noCourse.getWeeks(),weeks)){
+                if (!noClassGenerator.equalWeeks(noCourse.getWeeks(), weeks)) {
                     continue;
                 }
 
@@ -198,7 +202,7 @@ public class CourseServiceImpl implements CourseService {
 
                 // 因为强行转换失败所以采用赋值的方式
                 // 原因不明
-                BeanUtils.copyProperties(noCourse,noCourse4Group);
+                BeanUtils.copyProperties(noCourse, noCourse4Group);
                 userNoClassPack4Group.add(noCourse4Group);
             }
         }
@@ -207,6 +211,7 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * 获取部门的无课表 包括组织者
+     *
      * @param groupId
      * @param weeks
      * @return
@@ -221,24 +226,24 @@ public class CourseServiceImpl implements CourseService {
         // 添加组织创建者
         users.add(user);
         // 获取数据
-        userAllNoClassPack.addAll(getUserGroupNoClassPackOrderByWeeks(users,weeks));
+        userAllNoClassPack.addAll(getUserGroupNoClassPackOrderByWeeks(users, weeks));
         return userAllNoClassPack;
     }
 
     /**
      * 组织无课表打包
-     *  某一节课是那些人没课
+     * 某一节课是那些人没课
      *
      * @param classes
      * @return
      */
-    public Collection<NoCourse4MutUsers> packNoClass4Group(Collection<NoCourse4Group> classes){
+    public Collection<NoCourse4MutUsers> packNoClass4Group(Collection<NoCourse4Group> classes) {
 
 
         Collection<NoCourse4MutUsers> noClassPack4Group = new HashSet<>();
 
         // 课程对应
-        Map<String,NoCourse4MutUsers> maps = new HashMap<>();
+        Map<String, NoCourse4MutUsers> maps = new HashMap<>();
 
         // 存储出现了哪些课
         Set<String> courses = new HashSet();
@@ -246,17 +251,17 @@ public class CourseServiceImpl implements CourseService {
         for (NoCourse4Group aClass : classes) {
             String s = noClassGenerator.transNum(aClass);
             s = s.substring(2);
-            if(courses.contains(s)){ // 如果该节课存在
+            if (courses.contains(s)) { // 如果该节课存在
                 NoCourse4MutUsers noCourse4MutUsers = maps.get(s);
-                if(!noCourse4MutUsers.getUsername().contains(aClass.getUsername())){ // 如果姓名已经存在则不重复加入
+                if (!noCourse4MutUsers.getUsername().contains(aClass.getUsername())) { // 如果姓名已经存在则不重复加入
                     noCourse4MutUsers.getUsername().add(aClass.getUsername());
                 }
-            }else {
+            } else {
                 NoCourse4MutUsers noCourse4MutUsers = new NoCourse4MutUsers();
-                BeanUtils.copyProperties(aClass,noCourse4MutUsers);
+                BeanUtils.copyProperties(aClass, noCourse4MutUsers);
                 noCourse4MutUsers.getUsername().add(aClass.getUsername());
                 courses.add(s);
-                maps.put(s,noCourse4MutUsers);
+                maps.put(s, noCourse4MutUsers);
                 noClassPack4Group.add(noCourse4MutUsers);
             }
 
@@ -265,28 +270,30 @@ public class CourseServiceImpl implements CourseService {
         return noClassPack4Group;
     }
 
-    public void savePackNoClass(Collection<NoCoursePack> resNoCourse){
-        resNoCourse.forEach(k->{
+    public void savePackNoClass(Collection<NoCoursePack> resNoCourse) {
+        resNoCourse.forEach(k -> {
             NoCoursePack noCoursePack = new NoCoursePack();
-            BeanUtils.copyProperties(k,noCoursePack);
+            BeanUtils.copyProperties(k, noCoursePack);
             noCoursePackMapper.insert(noCoursePack);
         });
     }
 
     /**
      * 删除指定用户无课表
+     *
      * @param userId
      */
     @Override
     public void deleteUserNoClassPack(long userId) {
         QueryWrapper<NoCoursePack> noCoursePackQueryWrapper = new QueryWrapper<>();
-        noCoursePackQueryWrapper.eq("user_id",userId);
+        noCoursePackQueryWrapper.eq("user_id", userId);
         noCoursePackMapper.delete(noCoursePackQueryWrapper);
     }
 
     /**
      * 从教务处拉取
      * 封装为Course类型
+     *
      * @param username
      * @param password
      * @return
@@ -296,18 +303,29 @@ public class CourseServiceImpl implements CourseService {
     public List<Course> getUserCourseFromSust(String username, String password) throws BusinessException {
         List<SustCourse> sustCourseList = userClassAutoImport.prepareCASLogin(username, password).doResolve();
         List<Course> courseList = new ArrayList<>();
-        sustCourseList.forEach(k-> courseList.add(convertFromSustCourse(k)));
+        sustCourseList.forEach(k ->
+        {
+            System.out.println(k);
+            courseList.add(convertFromSustCourse(k));
+        });
         return courseList;
     }
 
     /**
      * 类型转化
+     *
      * @param sustCourse
      * @return
      */
-    private Course convertFromSustCourse(SustCourse sustCourse){
+    private Course convertFromSustCourse(SustCourse sustCourse) {
         Course course = new Course();
-        course.setWeek(sustCourse.getWeeks());
+        course.setWeeks(sustCourse.getWeeks());
+        // has bug : different start
+        course.setWeeksText(noClassGenerator.convertWeeksTestFromWeeks(sustCourse.getWeeks()));
+        // 3
+        int classTime = sustCourse.getClassTime();
+        course.setPeriod(noClassGenerator.convertPeriod(classTime % 11 % 2 == 0 ? classTime % 11 / 2 -1: classTime % 11 / 2 + 1 -1));
+        course.setWeek(noClassGenerator.convertWeek(classTime / 11));
         return course;
     }
 }
