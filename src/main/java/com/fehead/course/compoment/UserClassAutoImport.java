@@ -102,7 +102,7 @@ public class UserClassAutoImport {
             // 不为302未知错误
             throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
         }
-        logger.info("登录成功");
+        logger.info("sust教务系统登录成功，用户:"+username);
         String location = execute.header(Header.LOCATION);
         // TGC会自动设置
 //        String tgc = execute.getCookie("TGC").getValue();

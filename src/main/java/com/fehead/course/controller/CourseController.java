@@ -10,6 +10,7 @@ import com.fehead.course.dao.UserMapper;
 import com.fehead.course.dao.entity.Course;
 import com.fehead.course.dao.entity.NoCourse4Group;
 import com.fehead.course.dao.entity.NoCoursePack;
+import com.fehead.course.error.EmCourseExceptError;
 import com.fehead.lang.controller.BaseController;
 import com.fehead.lang.error.BusinessException;
 import com.fehead.lang.error.EmBusinessError;
@@ -88,7 +89,7 @@ public class CourseController extends BaseController {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
         if (userMapper.selectById(userId) == null) { // 用户检查
-            throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
+            throw new BusinessException(EmCourseExceptError.SUST_JWC_LOGIN_FAIL);
         }
 
         for (int i = 0; i < addFormArrs.length; i++) {
@@ -156,9 +157,9 @@ public class CourseController extends BaseController {
      * @param id
      * @return
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{course_id}")
     @ApiOperation("根据id删除一个课程单元")
-    public FeheadResponse deleteCourse(@PathVariable("id") int id) {
+    public FeheadResponse deleteCourse(@PathVariable("course_id") int id) {
 
         courseMapper.deleteById(id);
 
@@ -191,9 +192,9 @@ public class CourseController extends BaseController {
      * @return
      * @throws BusinessException
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{course_id}")
     @ApiOperation("根据id获取单元课程信息")
-    public FeheadResponse getCourseById(@PathVariable("id") int id) throws BusinessException {
+    public FeheadResponse getCourseById(@PathVariable("course_id") int id) throws BusinessException {
         Course course = courseMapper.selectById(id);
         if (course == null) {
             throw new BusinessException(EmBusinessError.DATARESOURCE_CONNECT_FAILURE, "数据不存在");
@@ -319,9 +320,9 @@ public class CourseController extends BaseController {
      * @param userId
      * @return
      */
-    @GetMapping("/no_class/{id}")
+    @GetMapping("/no_class/{user_id}")
     @ApiOperation("获取用户的无课表")
-    public FeheadResponse getNoClass(@PathVariable("id") int userId) {
+    public FeheadResponse getNoClass(@PathVariable("user_id") int userId) {
 
         Collection<NoCoursePack> courses = courseService.getUserNoClassPack(userId);
 
@@ -337,10 +338,10 @@ public class CourseController extends BaseController {
      * @param include
      * @return
      */
-    @GetMapping("/no_class/group/{id}")
+    @GetMapping("/no_class/group/{group_id}")
     @ApiOperation("获取部门的无课表")
     public FeheadResponse getGroupNoClass(@RequestParam("user_id") int userId
-            , @PathVariable("id") int groupId
+            , @PathVariable("group_id") int groupId
             , @RequestParam(value = "weeks", required = false, defaultValue = "1") int weeks
             , @RequestParam(value = "include", required = false, defaultValue = "0") @ApiParam(value = "非必要参数，是否需要包含部门组织者的课表：需要为1，不需要为0") int include) throws BusinessException {
 
@@ -362,9 +363,9 @@ public class CourseController extends BaseController {
      *
      * @return
      */
-    @GetMapping("/no_class/generate/{id}")
+    @GetMapping("/no_class/generate/{user_id}")
     @ApiOperation("生成用户无课表")
-    public FeheadResponse generateNoClass(@PathVariable("id") int userId) throws BusinessException {
+    public FeheadResponse generateNoClass(@PathVariable("user_id") int userId) throws BusinessException {
 
         if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
@@ -378,17 +379,17 @@ public class CourseController extends BaseController {
      * 导入教务处课表并生成无课表
      * @return
      */
-    @PostMapping("/no_class/generate/auto/{id}")
+    @PostMapping("/generate/auto/{user_id}")
     @ApiOperation("根据教务处课表自动获取用户课表，并异步生成无课表")
-    public FeheadResponse generateCourseAuto(@PathVariable("id") int userId,@ApiParam("教务系统登录账号") String username
+    public FeheadResponse generateCourseAuto(@PathVariable("user_id") int userId,@ApiParam("教务系统登录账号") String username
             ,@ApiParam("教务系统登录密码")String password) throws BusinessException {
-
+        validateNull(username,password);
         if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
         }
         List<Course> courseList = courseService.getUserCourseFromSust(username,password);
 
-        return CommonReturnType.create(null);
+        return CommonReturnType.create(courseList);
 
     }
 }
