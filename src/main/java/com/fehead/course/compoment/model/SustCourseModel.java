@@ -37,10 +37,14 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class SustCourse {
+public class SustCourseModel {
 
     private long id;
 
+    /**
+     * 用户学号
+     */
+    private String username;
     /**
      * 课程姓名
      */

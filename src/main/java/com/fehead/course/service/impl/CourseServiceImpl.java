@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fehead.course.compoment.NoClassGenerator;
 import com.fehead.course.compoment.UserClassAutoImport;
 import com.fehead.course.compoment.model.SustCourse;
+import com.fehead.course.compoment.model.SustCourseModel;
 import com.fehead.course.controller.CourseController;
 import com.fehead.course.controller.vo.NoCourse4MutUsers;
-import com.fehead.course.dao.CourseMapper;
-import com.fehead.course.dao.GroupMapper;
-import com.fehead.course.dao.NoCourseMapper;
-import com.fehead.course.dao.NoCoursePackMapper;
+import com.fehead.course.dao.*;
 import com.fehead.course.dao.entity.*;
 import com.fehead.course.service.CourseService;
 import com.fehead.lang.error.BusinessException;
@@ -43,6 +41,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     NoCourseMapper noCourseMapper;
+
+    @Autowired
+    SustCourseMapper sustCourseMapper;
 
     @Autowired
     UserClassAutoImport userClassAutoImport;
@@ -301,8 +302,15 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public List<Course> getUserCourseFromSust(String username, String password) throws BusinessException {
-        List<SustCourse> sustCourseList = userClassAutoImport.prepareCASLogin(username, password).doResolve();
-        List<Course> courseList = new ArrayList<>();
+
+        // 数据库是否已经存储
+        QueryWrapper<SustCourse> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("username",username);
+        // keep from this
+        List<SustCourse> list = sustCourseMapper.selectList(queryWrapper);
+        // 没有就现在请求
+        List<SustCourseModel> sustCourseList =getSustCourseFromJWC(username,password);
+                List<Course> courseList = new ArrayList<>();
         sustCourseList.forEach(k ->
         {
             System.out.println(k);
@@ -312,12 +320,23 @@ public class CourseServiceImpl implements CourseService {
     }
 
     /**
-     * 类型转化
-     *
-     * @param sustCourse
+     * 发送请求从教务处拉取课表并解析为对象
+     * @param username
+     * @param password
      * @return
+     * @throws BusinessException
      */
-    private Course convertFromSustCourse(SustCourse sustCourse) {
+    private List<SustCourseModel> getSustCourseFromJWC(String username, String password) throws BusinessException {
+        return userClassAutoImport.prepareCASLogin(username, password).doResolve();
+    }
+
+    /**
+     * 类型转化
+     *  教务课表类型转化为V1用户课表类型
+     * @param sustCourse sust课表
+     * @return V1课表
+     */
+    private Course convertFromSustCourse(SustCourseModel sustCourse) {
         Course course = new Course();
         String formatWeeks = sustCourse.getWeeks().substring(1)+"0";
         course.setWeeks(formatWeeks);

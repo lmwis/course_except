@@ -4,7 +4,7 @@ import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
-import com.fehead.course.compoment.model.SustCourse;
+import com.fehead.course.compoment.model.SustCourseModel;
 import com.fehead.course.error.EmCourseExceptError;
 import com.fehead.lang.error.BusinessException;
 import com.fehead.lang.error.EmBusinessError;
@@ -177,7 +177,7 @@ public class UserClassAutoImport {
         return params;
     }
 
-    public List<SustCourse> doResolve(){
+    public List<SustCourseModel> doResolve(){
         return courseResolve.doResolve();
     }
 
@@ -201,29 +201,29 @@ public class UserClassAutoImport {
 //        private final String weeksRegx;
 //        private final String classTimeRegx;
 
-        List<SustCourse> doResolve(){
-            List<SustCourse> sustCourseList = new ArrayList<>();
+        List<SustCourseModel> doResolve(){
+            List<SustCourseModel> SustCourseModelList = new ArrayList<>();
             // 获取全部js代码
             String jsCourse = execRegxGroup0(courseHtml,jsCourseRegx);
             // 按照课程切分
             List<String> courses = execRegxGroups(jsCourse, oneCourseRegx);
             courses.forEach(k->{
-                SustCourse sustCourse = new SustCourse();
-                sustCourse.setTeacherName(execRegxGroup0(k, teacherNameRegx));
+                SustCourseModel SustCourseModel = new SustCourseModel();
+                SustCourseModel.setTeacherName(execRegxGroup0(k, teacherNameRegx));
                 // 其他信息
                 String courseInfos = execRegxGroup0(k, courseInfoRegx);
                 String[] split = courseInfos.split(",");
-                sustCourse.setCourseName(split[1].substring(1,split[1].indexOf("(")));
-                sustCourse.setClassroom(split[3].substring(1,split[3].lastIndexOf("\"")));
-                sustCourse.setWeeks(split[4].substring(1,21));
+                SustCourseModel.setCourseName(split[1].substring(1,split[1].indexOf("(")));
+                SustCourseModel.setClassroom(split[3].substring(1,split[3].lastIndexOf("\"")));
+                SustCourseModel.setWeeks(split[4].substring(1,21));
                 // 获取上课时间
                 int day = new Integer(execRegxGroup0(k, dayTimeRegx));
                 int when = new Integer(execRegxGroup0(k, whenTimeRegx));
                 // +1是为了不让下标从0开始
-                sustCourse.setClassTime(day*11+when+1);
-                sustCourseList.add(sustCourse);
+                SustCourseModel.setClassTime(day*11+when+1);
+                SustCourseModelList.add(SustCourseModel);
             });
-            return sustCourseList;
+            return SustCourseModelList;
         }
 
         private String execRegxGroup0(String content,String regx){

@@ -22,20 +22,4 @@ public class Course extends NoCourse{
 
     private String weeksText;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-
-    public String getWeeksText() {
-        return weeksText;
-    }
-
-    public void setWeeksText(String weeksText) {
-        this.weeksText = weeksText;
-    }
 }
