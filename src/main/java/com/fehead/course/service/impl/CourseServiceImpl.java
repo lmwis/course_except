@@ -319,10 +319,9 @@ public class CourseServiceImpl implements CourseService {
      */
     private Course convertFromSustCourse(SustCourse sustCourse) {
         Course course = new Course();
-        course.setWeeks(sustCourse.getWeeks());
-        // has bug : different start
-        course.setWeeksText(noClassGenerator.convertWeeksTestFromWeeks(sustCourse.getWeeks()));
-        // 3
+        String formatWeeks = sustCourse.getWeeks().substring(1)+"0";
+        course.setWeeks(formatWeeks);
+        course.setWeeksText(noClassGenerator.convertWeeksTestFromWeeks(formatWeeks));
         int classTime = sustCourse.getClassTime();
         course.setPeriod(noClassGenerator.convertPeriod(classTime % 11 % 2 == 0 ? classTime % 11 / 2 -1: classTime % 11 / 2 + 1 -1));
         course.setWeek(noClassGenerator.convertWeek(classTime / 11));
