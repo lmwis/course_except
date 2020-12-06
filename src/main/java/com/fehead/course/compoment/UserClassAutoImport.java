@@ -209,6 +209,7 @@ public class UserClassAutoImport {
             List<String> courses = execRegxGroups(jsCourse, oneCourseRegx);
             courses.forEach(k->{
                 SustCourseModel SustCourseModel = new SustCourseModel();
+                SustCourseModel.setUsername(username);
                 SustCourseModel.setTeacherName(execRegxGroup0(k, teacherNameRegx));
                 // 其他信息
                 String courseInfos = execRegxGroup0(k, courseInfoRegx);

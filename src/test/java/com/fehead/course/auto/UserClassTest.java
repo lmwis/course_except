@@ -1,11 +1,8 @@
 package com.fehead.course.auto;
 
-import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpUtil;
 import com.fehead.course.compoment.UserClassAutoImport;
-import com.fehead.course.compoment.model.SustCourse;
 import com.fehead.lang.error.BusinessException;
-import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

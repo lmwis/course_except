@@ -3,7 +3,6 @@ package com.fehead.course.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fehead.course.compoment.NoClassGenerator;
 import com.fehead.course.compoment.UserClassAutoImport;
-import com.fehead.course.compoment.model.SustCourse;
 import com.fehead.course.compoment.model.SustCourseModel;
 import com.fehead.course.controller.CourseController;
 import com.fehead.course.controller.vo.NoCourse4MutUsers;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * @author lmwis
@@ -295,26 +293,71 @@ public class CourseServiceImpl implements CourseService {
      * 从教务处拉取
      * 封装为Course类型
      *
+     * @param username username
+     * @param password password
+     * @return data
+     * @throws BusinessException 业务异常
+     */
+    @Override
+    public List<Course> getUserCourseFromSust(String username, String password) throws BusinessException {
+        List<Course> courseList = new ArrayList<>();
+        // 数据库是否已经存储
+        QueryWrapper<SustCourse> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("username",username);
+        List<SustCourse> list = sustCourseMapper.selectList(queryWrapper);
+        // 没有就现在请求
+        if(list==null||list.size()==0){
+            List<SustCourseModel> sustCourseList = getSustCourseFromJWC(username, password);
+            // 写入数据库
+            sustCourseList.forEach(k->{
+                SustCourse sustCourse = convertFromSustCourse(k);
+                courseList.add(sustCourse);
+                // 写入数据库
+                sustCourseMapper.insert(sustCourse);
+            });
+        }else{
+            courseList.addAll(list);
+        }
+        return courseList;
+    }
+
+    /**
+     * 从教务处拉取
+     * 封装为SustCourse类型
+     * @param username username
+     * @param password password
+     * @return data
+     * @throws BusinessException 业务异常
+     */
+    @Override
+    public List<SustCourse> getUserCourseFromSustNewType(String username, String password) throws BusinessException {
+        // 数据库是否已经存储
+        QueryWrapper<SustCourse> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("username",username);
+        List<SustCourse> list = sustCourseMapper.selectList(queryWrapper);
+        // 没有就现在请求
+        if(list==null||list.size()==0){
+            list = getSustCourse(username,password);
+        }
+        return list;
+    }
+
+    /**
+     * 从JWC爬取数据并写入数据库
      * @param username
      * @param password
      * @return
      * @throws BusinessException
      */
-    @Override
-    public List<Course> getUserCourseFromSust(String username, String password) throws BusinessException {
-
-        // 数据库是否已经存储
-        QueryWrapper<SustCourse> queryWrapper = new QueryWrapper();
-        queryWrapper.eq("username",username);
-        // keep from this
-        List<SustCourse> list = sustCourseMapper.selectList(queryWrapper);
-        // 没有就现在请求
-        List<SustCourseModel> sustCourseList =getSustCourseFromJWC(username,password);
-                List<Course> courseList = new ArrayList<>();
-        sustCourseList.forEach(k ->
-        {
-            System.out.println(k);
-            courseList.add(convertFromSustCourse(k));
+    private List<SustCourse> getSustCourse(String username, String password) throws BusinessException {
+        List<SustCourse> courseList = new ArrayList<>();
+        List<SustCourseModel> sustCourseList = getSustCourseFromJWC(username, password);
+        // 写入数据库
+        sustCourseList.forEach(k->{
+            SustCourse sustCourse = convertFromSustCourse(k);
+            courseList.add(sustCourse);
+            // 写入数据库
+            sustCourseMapper.insert(sustCourse);
         });
         return courseList;
     }
@@ -332,12 +375,16 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * 类型转化
-     *  教务课表类型转化为V1用户课表类型
+     *  教务课表类型转化为V1DB[SustCourse]课表类型
      * @param sustCourse sust课表
      * @return V1课表
      */
-    private Course convertFromSustCourse(SustCourseModel sustCourse) {
-        Course course = new Course();
+    private SustCourse convertFromSustCourse(SustCourseModel sustCourse) {
+        SustCourse course = new SustCourse();
+        course.setClassroom(sustCourse.getClassroom());
+        course.setCourseName(sustCourse.getCourseName());
+        course.setTeacherName(sustCourse.getTeacherName());
+        course.setUsername(sustCourse.getUsername());
         String formatWeeks = sustCourse.getWeeks().substring(1)+"0";
         course.setWeeks(formatWeeks);
         course.setWeeksText(noClassGenerator.convertWeeksTestFromWeeks(formatWeeks));

@@ -4,22 +4,22 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fehead.course.compoment.NoClassGenerator;
 import com.fehead.course.compoment.UserGeneratorNoClassTask;
-import com.fehead.course.compoment.model.SustCourse;
 import com.fehead.course.dao.CourseMapper;
 import com.fehead.course.dao.UserMapper;
 import com.fehead.course.dao.entity.Course;
 import com.fehead.course.dao.entity.NoCourse4Group;
 import com.fehead.course.dao.entity.NoCoursePack;
+import com.fehead.course.dao.entity.SustCourse;
 import com.fehead.course.error.EmCourseExceptError;
+import com.fehead.course.service.CourseService;
+import com.fehead.course.service.model.AddFormArr;
+import com.fehead.course.service.model.UpdateFormArr;
+import com.fehead.course.validate.CourseValidator;
 import com.fehead.lang.controller.BaseController;
 import com.fehead.lang.error.BusinessException;
 import com.fehead.lang.error.EmBusinessError;
 import com.fehead.lang.response.CommonReturnType;
 import com.fehead.lang.response.FeheadResponse;
-import com.fehead.course.service.CourseService;
-import com.fehead.course.service.model.AddFormArr;
-import com.fehead.course.service.model.UpdateFormArr;
-import com.fehead.course.validate.CourseValidator;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -400,7 +400,7 @@ public class CourseController extends BaseController {
         if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
         }
-        List<Course> courseList = courseService.getUserCourseFromSust(username,password);
+        List<SustCourse> courseList = courseService.getUserCourseFromSustNewType(username,password);
         return CommonReturnType.create(courseList);
     }
 }
