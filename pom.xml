@@ -17,7 +17,7 @@
 
   <groupId>com.fehead</groupId>
   <artifactId>course-except</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.5-SNAPSHOT</version>
 
   <name>course-except</name>
 
@@ -128,7 +128,7 @@
         <configuration>
           <fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
           <!-- 指定该Main Class为全局的唯一入口 -->
-          <mainClass>com.fehead.CourseApplication</mainClass>
+          <mainClass>com.fehead.course.CourseApplication</mainClass>
           <!--                    <layout>ZIP</layout>-->
         </configuration>
         <executions>
