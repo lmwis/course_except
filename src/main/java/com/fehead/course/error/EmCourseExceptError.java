@@ -12,7 +12,8 @@ import com.fehead.lang.error.EmBusinessError;
  * @Version 1.0
  */
 public enum EmCourseExceptError implements CommonError {
-    SUST_JWC_LOGIN_FAIL(21001,"教务处登录失败，用户名或密码错误")
+    SUST_JWC_LOGIN_FAIL(21001,"教务处登录失败，用户名或密码错误"),
+    USER_ONT_LOGIN_JWC(21002,"用户未登录教务系统")
     ;
     private EmCourseExceptError(int errCode, String errMsg) {
         this.errCode = errCode;

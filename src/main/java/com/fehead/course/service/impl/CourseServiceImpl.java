@@ -8,6 +8,7 @@ import com.fehead.course.controller.CourseController;
 import com.fehead.course.controller.vo.NoCourse4MutUsers;
 import com.fehead.course.dao.*;
 import com.fehead.course.dao.entity.*;
+import com.fehead.course.error.EmCourseExceptError;
 import com.fehead.course.service.CourseService;
 import com.fehead.lang.error.BusinessException;
 import org.springframework.beans.BeanUtils;
@@ -289,37 +290,38 @@ public class CourseServiceImpl implements CourseService {
         noCoursePackMapper.delete(noCoursePackQueryWrapper);
     }
 
-    /**
-     * 从教务处拉取
-     * 封装为Course类型
-     *
-     * @param username username
-     * @param password password
-     * @return data
-     * @throws BusinessException 业务异常
-     */
-    @Override
-    public List<Course> getUserCourseFromSust(String username, String password) throws BusinessException {
-        List<Course> courseList = new ArrayList<>();
-        // 数据库是否已经存储
-        QueryWrapper<SustCourse> queryWrapper = new QueryWrapper();
-        queryWrapper.eq("username",username);
-        List<SustCourse> list = sustCourseMapper.selectList(queryWrapper);
-        // 没有就现在请求
-        if(list==null||list.size()==0){
-            List<SustCourseModel> sustCourseList = getSustCourseFromJWC(username, password);
-            // 写入数据库
-            sustCourseList.forEach(k->{
-                SustCourse sustCourse = convertFromSustCourse(k);
-                courseList.add(sustCourse);
-                // 写入数据库
-                sustCourseMapper.insert(sustCourse);
-            });
-        }else{
-            courseList.addAll(list);
-        }
-        return courseList;
-    }
+//    /**
+//     * 从教务处拉取
+//     * 封装为Course类型
+//     *
+//     * @param username username
+//     * @param password password
+//     * @return data
+//     * @throws BusinessException 业务异常
+//     */
+//    @Override
+//    public List<Course> getUserCourseFromSust(String username, String password,int userId) throws BusinessException {
+//        List<Course> courseList = new ArrayList<>();
+//        // 数据库是否已经存储
+//        QueryWrapper<SustCourse> queryWrapper = new QueryWrapper();
+//        queryWrapper.eq("username",username);
+//        List<SustCourse> list = sustCourseMapper.selectList(queryWrapper);
+//        // 没有就现在请求
+//        if(list==null||list.size()==0){
+//            List<SustCourseModel> sustCourseList = getSustCourseFromJWC(username, password);
+//            // 写入数据库
+//            sustCourseList.forEach(k->{
+//                SustCourse sustCourse = convertFromSustCourse(k);
+//                courseList.add(sustCourse);
+//                sustCourse.setUserId(userId);
+//                // 写入数据库
+//                sustCourseMapper.insert(sustCourse);
+//            });
+//        }else{
+//            courseList.addAll(list);
+//        }
+//        return courseList;
+//    }
 
     /**
      * 从教务处拉取
@@ -330,16 +332,26 @@ public class CourseServiceImpl implements CourseService {
      * @throws BusinessException 业务异常
      */
     @Override
-    public List<SustCourse> getUserCourseFromSustNewType(String username, String password) throws BusinessException {
+    public List<SustCourse> getUserCourseFromSustNewType(String username, String password,int userId) throws BusinessException {
         // 数据库是否已经存储
         QueryWrapper<SustCourse> queryWrapper = new QueryWrapper();
         queryWrapper.eq("username",username);
         List<SustCourse> list = sustCourseMapper.selectList(queryWrapper);
         // 没有就现在请求
         if(list==null||list.size()==0){
-            list = getSustCourse(username,password);
+            list = getSustCourse(username,password,userId);
         }
         return list;
+    }
+
+    @Override
+    public List<SustCourse> getUserCourseFromSustNewType(int userId) throws BusinessException {
+
+        List<SustCourse> courseList = sustCourseMapper.selectList(new QueryWrapper<SustCourse>().eq("user_id", userId));
+        if(courseList==null||courseList.size()==0){
+            throw new BusinessException(EmCourseExceptError.USER_ONT_LOGIN_JWC);
+        }
+        return courseList;
     }
 
     /**
@@ -349,12 +361,13 @@ public class CourseServiceImpl implements CourseService {
      * @return
      * @throws BusinessException
      */
-    private List<SustCourse> getSustCourse(String username, String password) throws BusinessException {
+    private List<SustCourse> getSustCourse(String username, String password,int userId) throws BusinessException {
         List<SustCourse> courseList = new ArrayList<>();
         List<SustCourseModel> sustCourseList = getSustCourseFromJWC(username, password);
         // 写入数据库
         sustCourseList.forEach(k->{
             SustCourse sustCourse = convertFromSustCourse(k);
+            sustCourse.setUserId(userId);
             courseList.add(sustCourse);
             // 写入数据库
             sustCourseMapper.insert(sustCourse);

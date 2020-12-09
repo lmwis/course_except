@@ -36,7 +36,9 @@ public interface CourseService {
 
     void deleteUserNoClassPack(long userId);
 
-    List<Course> getUserCourseFromSust(String username, String password) throws BusinessException;
+//    List<Course> getUserCourseFromSust(String username, String password,int userId) throws BusinessException;
 
-    List<SustCourse> getUserCourseFromSustNewType(String username, String password) throws BusinessException;
+    List<SustCourse> getUserCourseFromSustNewType(String username, String password,int userId) throws BusinessException;
+
+    List<SustCourse> getUserCourseFromSustNewType(int userId) throws BusinessException;
 }
