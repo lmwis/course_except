@@ -402,7 +402,8 @@ public class CourseController extends BaseController {
         }
         List<SustCourse> courseList = courseService.getUserCourseFromSustNewType(username,password,userId);
         // 生成无课表
-        ///
+        // 异步执行
+        //userGeneratorNoClassTask.noClassAction((long) userId);
         return CommonReturnType.create(courseList);
     }
 
