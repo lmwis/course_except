@@ -52,7 +52,7 @@ public class NoClassGenerator {
 
     /**
      * id转化为对象
-     * @param strId
+     * @param strId id
      * @param id 用户id，因此对象转为id会擦除用户id，所以转化回来需要额外设置
      * @return
      */

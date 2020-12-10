@@ -64,7 +64,7 @@ public class UserGeneratorNoClassTask{
         // 6.写入数据库
         courseService.savePackNoClass(userNoClassPack);
     }
-    @Async   // 支持异步
+//    @Async   // 支持异步
     public void noClassActionSustType(long userId) {
 
         // 1.数据库中删除用户所有单元无课表(DB)
