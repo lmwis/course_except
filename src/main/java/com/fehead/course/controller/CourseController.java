@@ -370,7 +370,7 @@ public class CourseController extends BaseController {
         if (userMapper.selectById(userId) == null) { // 用户检查
             throw new BusinessException(EmBusinessError.USER_NOT_EXIST);
         }
-        noClassGenerator.generateNoClass(userId);
+        noClassGenerator.generateNoClass(userId,courseService.selectByUserId(userId));
 
         return CommonReturnType.create(null);
     }
@@ -403,7 +403,7 @@ public class CourseController extends BaseController {
         List<SustCourse> courseList = courseService.getUserCourseFromSustNewType(username,password,userId);
         // 生成无课表
         // 异步执行
-        //userGeneratorNoClassTask.noClassAction((long) userId);
+        userGeneratorNoClassTask.noClassActionSustType((long) userId);
         return CommonReturnType.create(courseList);
     }
 

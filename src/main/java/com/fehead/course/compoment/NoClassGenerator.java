@@ -1,14 +1,9 @@
 package com.fehead.course.compoment;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fehead.course.controller.CourseController;
-import com.fehead.course.dao.CourseMapper;
-import com.fehead.course.dao.NoCourseMapper;
 import com.fehead.course.dao.entity.Course;
 import com.fehead.course.dao.entity.NoCourse;
-import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -23,9 +18,7 @@ import java.util.*;
 @MapperScan("{com.fehead.course.dao}")
 public class NoClassGenerator {
 
-    public NoClassGenerator(CourseMapper courseMapper,NoCourseMapper noCourseMapper) {
-        this.courseMapper = courseMapper;
-        this.noCourseMapper = noCourseMapper;
+    public NoClassGenerator() {
         allClassInit(); //初始化
     }
 
@@ -40,11 +33,6 @@ public class NoClassGenerator {
     public void setCourseStrId(Set<String> courseStrId) {
         this.courseStrId = courseStrId;
     }
-
-    final CourseMapper courseMapper;
-
-    final NoCourseMapper noCourseMapper;
-
 
 //    public Course transToObject(String strId){
 //
@@ -64,11 +52,11 @@ public class NoClassGenerator {
 
     /**
      * id转化为对象
-     *
      * @param strId
+     * @param id 用户id，因此对象转为id会擦除用户id，所以转化回来需要额外设置
      * @return
      */
-    public Set<Course> transToObject(Set<String> strId) {
+    public Set<Course> transToObject(Set<String> strId,long id) {
         Set<Course> courses = new HashSet<>();
         for (String s : strId) {
             Course course = new Course();
@@ -81,6 +69,7 @@ public class NoClassGenerator {
             course.setWeeks(convertWeeks);
             course.setWeek(convertWeek);
             course.setPeriod(convertPeriod);
+            course.setId(id);
             courses.add(course);
         }
 
@@ -129,6 +118,7 @@ public class NoClassGenerator {
 
     /**
      * 按周次分割课程
+     * 划分为单元课
      *
      * @param course
      * @return
@@ -198,8 +188,8 @@ public class NoClassGenerator {
      * 将课程按照逻辑转化为唯一id
      * 0853  第八周，周五，第56节
      *
-     * @param course
-     * @return
+     * @param course course
+     * @return String
      */
     public String transNum(NoCourse course) {
 
@@ -396,21 +386,18 @@ public class NoClassGenerator {
 
     /**
      * 生成单元无课表
-     * 写入数据库
-     *
-     * @param userId
-     * @return
+     * @param userCourses 用户课表
+     * @return 单元无课表
      */
-    public Collection<Course> generateNoClass(long userId) {
+    public Collection<Course> generateNoClass(long userId,List<Course> userCourses) {
 
-        // 先删除用户的无课表单元
-        deleteNoClass(userId);
-
-        List<Course> userCourses = courseMapper.selectByUserId(userId);
+//        List<Course> userCourses = courseMapper.selectByUserId(userId);
+        // 划分为单元课程
         List<Course> unitCourse = this.splitWeeksCourse(userCourses);
         Set<String> courseStrId = this.getCourseStrId();
-
-        Set<String> resCourseStrId = new HashSet();
+        // 课程id结果集
+        Set<String> resCourseStrId = new HashSet<>();
+        // 一学期二十周所有的单元课程
         List<Course> courses = this.generateAllClass();
         for (Course c : courses) {
             resCourseStrId.add(this.transNum(c));
@@ -421,33 +408,9 @@ public class NoClassGenerator {
                 resCourseStrId.remove(s);
             }
         }
-        Set<Course> noCourses = this.transToObject(resCourseStrId);
 
-
-        // 写入数据库
-        for (Course c : noCourses) {
-            NoCourse noCourse = new NoCourse();
-            noCourse.setUserId(userId);
-            noCourse.setWeeks(c.getWeeks());
-            noCourse.setPeriod(c.getPeriod());
-            noCourse.setWeek(c.getWeek());
-            noCourseMapper.insert(noCourse);
-        }
-
-        return noCourses;
+        return this.transToObject(resCourseStrId,userId);
     }
-
-    /**
-     * 删除单元无课表
-     *
-     * @param userId
-     */
-    public void deleteNoClass(long userId) {
-        QueryWrapper<NoCourse> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
-        noCourseMapper.delete(queryWrapper);
-    }
-
 
     /**
      * 将01形式的weeks转换为weeks文本
