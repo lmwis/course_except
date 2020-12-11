@@ -358,7 +358,7 @@ public class CourseServiceImpl implements CourseService {
     public List<SustCourse> getUserCourseFromSustNewTypeWeeks(int userId,int weeks) throws BusinessException {
         List<SustCourse> result = new ArrayList<>();
         for (SustCourse course : getUserCourseFromSustNewType(userId)) {
-            if (judgeWeeksTempAnd(course.getWeeks(), weeks)) { //周次匹配成功
+            if (noClassGenerator.equalWeeks(course.getWeeks(), weeks)) { //周次匹配成功
                 result.add(course);
             }
         }

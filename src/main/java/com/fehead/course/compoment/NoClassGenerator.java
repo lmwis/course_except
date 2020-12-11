@@ -371,10 +371,10 @@ public class NoClassGenerator {
 
     /**
      * 判断指定周次是否在统一形式的字符串中为1
-     *
-     * @param weeks
-     * @param weeksNum
-     * @return
+     *  从1开始
+     * @param weeks 11111111111111111111
+     * @param weeksNum 1
+     * @return boolean 为1返回true
      */
     public boolean equalWeeks(String weeks, int weeksNum) {
         char c = weeks.charAt(weeksNum - 1);
