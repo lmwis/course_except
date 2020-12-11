@@ -1,8 +1,10 @@
 package com.fehead.course.config;
 
 import com.fehead.course.authentication.JWTAuthenticationFilter;
+import com.fehead.lang.properties.FeheadProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +24,7 @@ import javax.servlet.Filter;
  * @Version 1.0
  */
 @Configuration
+@ComponentScan("com.fehead.lang.properties")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
@@ -37,6 +40,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationFailureHandler feheadAuthenticationFailureHandler;
+
+    @Autowired
+    FeheadProperties feheadProperties;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -76,6 +82,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private Filter authenticationTokenFilterBean() throws Exception {
-        return new JWTAuthenticationFilter(authenticationManager());
+        return new JWTAuthenticationFilter(authenticationManager(),feheadProperties);
     }
 }

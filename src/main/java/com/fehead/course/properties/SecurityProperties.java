@@ -1,5 +1,6 @@
 package com.fehead.course.properties;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
@@ -25,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Nightnessss 2019/7/18 20:11
  */
 @ConfigurationProperties(prefix = "fehead")
+@Data
 public class SecurityProperties {
 
     private BrowserProperties browser = new BrowserProperties();
@@ -33,27 +35,4 @@ public class SecurityProperties {
 
     private SendEmailProperties sendEmailProperties = new SendEmailProperties();
 
-    public SmsProperties getSmsProperties() {
-        return smsProperties;
-    }
-
-    public void setSmsProperties(SmsProperties smsProperties) {
-        this.smsProperties = smsProperties;
-    }
-
-    public BrowserProperties getBrowser() {
-        return browser;
-    }
-
-    public void setBrowser(BrowserProperties browser) {
-        this.browser = browser;
-    }
-
-    public SendEmailProperties getSendEmailProperties() {
-        return sendEmailProperties;
-    }
-
-    public void setSendEmailProperties(SendEmailProperties sendEmailProperties) {
-        this.sendEmailProperties = sendEmailProperties;
-    }
 }

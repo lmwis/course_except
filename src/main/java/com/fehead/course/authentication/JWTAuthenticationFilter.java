@@ -1,9 +1,11 @@
 package com.fehead.course.authentication;
 
+import com.fehead.lang.properties.FeheadProperties;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,8 +25,10 @@ import java.util.ArrayList;
  * @Version 1.0
  */
 public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+    final FeheadProperties feheadProperties;
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager,FeheadProperties feheadProperties) {
         super(authenticationManager);
+        this.feheadProperties = feheadProperties;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
             try {
                 // parse the token.
                 String user = Jwts.parser()
-                        .setSigningKey("MyJwtSecret")
+                        .setSigningKey(feheadProperties.getSecurityProperties().getJwtSecretKey())
                         .parseClaimsJws(token.replace("Bearer ", ""))
                         .getBody()
                         .getSubject();

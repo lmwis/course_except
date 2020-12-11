@@ -1,6 +1,7 @@
 package com.fehead.course.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fehead.lang.properties.FeheadProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
@@ -29,8 +30,7 @@ public class FeheadAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     ObjectMapper objectMapper;
 
     @Autowired
-    SecurityProperties securityProperties;
-
+    FeheadProperties feheadProperties;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -42,8 +42,9 @@ public class FeheadAuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
         String token = Jwts.builder()
                 .setSubject(((org.springframework.security.core.userdetails.User) authentication.getPrincipal()).getUsername())
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 24 * 1000))
-                .signWith(SignatureAlgorithm.HS512, "MyJwtSecret")
+//                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 24 * 1000))
+                .setExpiration(new Date( System.currentTimeMillis() + feheadProperties.getSecurityProperties().getJwtExpiredTime()))
+                .signWith(SignatureAlgorithm.HS512, feheadProperties.getSecurityProperties().getJwtSecretKey())
                 .compact();
 
         setCORS(response);
