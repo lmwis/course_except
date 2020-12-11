@@ -1,5 +1,7 @@
 package com.fehead.course.authentication;
 
+import com.fehead.lang.error.BusinessException;
+import com.fehead.lang.error.EmBusinessError;
 import com.fehead.lang.properties.FeheadProperties;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -69,5 +71,4 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
         }
         return null;
     }
-
 }
