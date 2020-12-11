@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author lmwis
- * @description:实现springsecurity用户校验，自定义用户认证流程
+ * @description: 实现springsecurity用户校验，自定义用户认证流程
  * @date 2019-08-29 16:08
  * @Version 1.0
  */

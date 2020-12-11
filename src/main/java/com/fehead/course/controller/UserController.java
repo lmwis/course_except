@@ -9,8 +9,13 @@ import com.fehead.course.service.RedisService;
 import com.fehead.lang.controller.BaseController;
 import com.fehead.lang.error.BusinessException;
 import com.fehead.lang.error.EmBusinessError;
+import com.fehead.lang.properties.FeheadProperties;
 import com.fehead.lang.response.CommonReturnType;
 import com.fehead.lang.response.FeheadResponse;
+import com.fehead.lang.util.CheckEmailAndTelphoneUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -21,7 +26,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.fehead.lang.util.CheckEmailAndTelphoneUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * @author lmwis
@@ -49,6 +57,9 @@ public class UserController extends BaseController {
 
     @Autowired
     UserGeneratorNoClassTask userGeneratorNoClassTask;
+
+    @Autowired
+    FeheadProperties feheadProperties;
 
 
     @PostMapping()
@@ -144,9 +155,36 @@ public class UserController extends BaseController {
 
     }
 
+    /**
+     * token刷新
+     * @param request request
+     * @param response response
+     * @return FeheadResponse
+     */
     @GetMapping("/validate")
     @ApiOperation("token校验")
-    public FeheadResponse tokenValidate(){
+    public FeheadResponse tokenValidate(HttpServletRequest request, HttpServletResponse response){
+        // 能走到这一步必定token有效
+        String oldToken = request.getHeader("Authorization");
+        // 获取过期时间
+        Claims bearer = Jwts.parser()
+                .setSigningKey(feheadProperties.getSecurityProperties().getJwtSecretKey())
+                .parseClaimsJws(oldToken.replace("Bearer ", ""))
+                .getBody();
+        long times = bearer.getExpiration().getTime()-new Date().getTime();
+        // 剩余时间
+        int hours = (int)times / 1000 / 60 / 60 ;
+        String newToken ="";
+        if(hours<120){ // 不足五天
+            // 重新生成token
+            String subject = bearer.getSubject();
+            newToken = Jwts.builder()
+                    .setSubject(subject)
+                    .setExpiration(new Date( System.currentTimeMillis() + feheadProperties.getSecurityProperties().getJwtExpiredTime()))
+                    .signWith(SignatureAlgorithm.HS512, feheadProperties.getSecurityProperties().getJwtSecretKey())
+                    .compact();
+        }
+        response.addHeader("token", "Bearer " + newToken);
         return CommonReturnType.create("校验成功");
     }
 
