@@ -354,6 +354,17 @@ public class CourseServiceImpl implements CourseService {
         return courseList;
     }
 
+    @Override
+    public List<SustCourse> getUserCourseFromSustNewTypeWeeks(int userId,int weeks) throws BusinessException {
+        List<SustCourse> result = new ArrayList<>();
+        for (SustCourse course : getUserCourseFromSustNewType(userId)) {
+            if (judgeWeeksTempAnd(course.getWeeks(), weeks)) { //周次匹配成功
+                result.add(course);
+            }
+        }
+        return result;
+    }
+
     /**
      * 从JWC爬取数据并写入数据库
      * @param username

@@ -1,13 +1,10 @@
 package com.fehead.course.authentication;
 
-import com.fehead.lang.error.BusinessException;
-import com.fehead.lang.error.EmBusinessError;
 import com.fehead.lang.properties.FeheadProperties;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

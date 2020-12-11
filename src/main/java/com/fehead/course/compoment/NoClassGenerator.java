@@ -69,7 +69,7 @@ public class NoClassGenerator {
             course.setWeeks(convertWeeks);
             course.setWeek(convertWeek);
             course.setPeriod(convertPeriod);
-            course.setId(id);
+            course.setUserId(id);
             courses.add(course);
         }
 

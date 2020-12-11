@@ -27,7 +27,7 @@ public class UserNoCourseTest {
     UserGeneratorNoClassTask userGeneratorNoClassTask;
     @Test
     public void whenInsertUnitCourse(){
-        userGeneratorNoClassTask.noClassActionSustType(1);
+//        userGeneratorNoClassTask.noClassActionSustType(1);
     }
 
 }
