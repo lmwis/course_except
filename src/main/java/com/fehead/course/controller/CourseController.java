@@ -426,6 +426,12 @@ public class CourseController extends BaseController {
         List<SustCourse> courses = courseService.getUserCourseFromSustNewType(userId);
 
         return CommonReturnType.create(courses);
+    }
 
+    @GetMapping("/weeks")
+    @ApiOperation("请求当前时间为第几周")
+    public FeheadResponse currentWeeks(){
+        int weeks = courseService.getCurrentWeeks();
+        return CommonReturnType.create(weeks);
     }
 }

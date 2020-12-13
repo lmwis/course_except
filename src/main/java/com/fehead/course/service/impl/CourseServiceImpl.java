@@ -47,6 +47,11 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     UserClassAutoImport userClassAutoImport;
 
+    /**
+     * 2020下学期校历起始周次
+     */
+    private static final GregorianCalendar startDate = new GregorianCalendar(2020, Calendar.SEPTEMBER, 7);
+
     @Override
     public List<Course> selectByUserId(int userId) {
 
@@ -326,20 +331,21 @@ public class CourseServiceImpl implements CourseService {
     /**
      * 从教务处拉取
      * 封装为SustCourse类型
+     *
      * @param username username
      * @param password password
      * @return data
      * @throws BusinessException 业务异常
      */
     @Override
-    public List<SustCourse> getUserCourseFromSustNewType(String username, String password,int userId) throws BusinessException {
+    public List<SustCourse> getUserCourseFromSustNewType(String username, String password, int userId) throws BusinessException {
         // 数据库是否已经存储
         QueryWrapper<SustCourse> queryWrapper = new QueryWrapper();
-        queryWrapper.eq("username",username);
+        queryWrapper.eq("username", username);
         List<SustCourse> list = sustCourseMapper.selectList(queryWrapper);
         // 没有就现在请求
-        if(list==null||list.size()==0){
-            list = getSustCourse(username,password,userId);
+        if (list == null || list.size() == 0) {
+            list = getSustCourse(username, password, userId);
         }
         return list;
     }
@@ -348,14 +354,14 @@ public class CourseServiceImpl implements CourseService {
     public List<SustCourse> getUserCourseFromSustNewType(int userId) throws BusinessException {
 
         List<SustCourse> courseList = sustCourseMapper.selectList(new QueryWrapper<SustCourse>().eq("user_id", userId));
-        if(courseList==null||courseList.size()==0){
+        if (courseList == null || courseList.size() == 0) {
             throw new BusinessException(EmCourseExceptError.USER_ONT_LOGIN_JWC);
         }
         return courseList;
     }
 
     @Override
-    public List<SustCourse> getUserCourseFromSustNewTypeWeeks(int userId,int weeks) throws BusinessException {
+    public List<SustCourse> getUserCourseFromSustNewTypeWeeks(int userId, int weeks) throws BusinessException {
         List<SustCourse> result = new ArrayList<>();
         for (SustCourse course : getUserCourseFromSustNewType(userId)) {
             if (noClassGenerator.equalWeeks(course.getWeeks(), weeks)) { //周次匹配成功
@@ -366,17 +372,34 @@ public class CourseServiceImpl implements CourseService {
     }
 
     /**
+     * 返回当前时间在教务系统中的周次
+     * @return weeks
+     */
+    @Override
+    public int getCurrentWeeks() {
+
+        long nowTime = new Date().getTime();
+        long startTime = startDate.getTime().getTime();
+        // 相差天数
+        int days = (int) ((nowTime - startTime) / 1000 / 60 / 60 / 24);
+
+        // 返回当前周次
+        return (days / 7 + 1);
+    }
+
+    /**
      * 从JWC爬取数据并写入数据库
+     *
      * @param username
      * @param password
      * @return
      * @throws BusinessException
      */
-    private List<SustCourse> getSustCourse(String username, String password,int userId) throws BusinessException {
+    private List<SustCourse> getSustCourse(String username, String password, int userId) throws BusinessException {
         List<SustCourse> courseList = new ArrayList<>();
         List<SustCourseModel> sustCourseList = getSustCourseFromJWC(username, password);
         // 写入数据库
-        sustCourseList.forEach(k->{
+        sustCourseList.forEach(k -> {
             SustCourse sustCourse = convertFromSustCourse(k);
             sustCourse.setUserId(userId);
             courseList.add(sustCourse);
@@ -388,6 +411,7 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * 发送请求从教务处拉取课表并解析为对象
+     *
      * @param username
      * @param password
      * @return
@@ -399,7 +423,8 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * 类型转化
-     *  教务课表类型转化为V1DB[SustCourse]课表类型
+     * 教务课表类型转化为V1DB[SustCourse]课表类型
+     *
      * @param sustCourse sust课表
      * @return V1课表
      */
@@ -409,11 +434,11 @@ public class CourseServiceImpl implements CourseService {
         course.setCourseName(sustCourse.getCourseName());
         course.setTeacherName(sustCourse.getTeacherName());
         course.setUsername(sustCourse.getUsername());
-        String formatWeeks = sustCourse.getWeeks().substring(1)+"0";
+        String formatWeeks = sustCourse.getWeeks().substring(1) + "0";
         course.setWeeks(formatWeeks);
         course.setWeeksText(noClassGenerator.convertWeeksTestFromWeeks(formatWeeks));
         int classTime = sustCourse.getClassTime();
-        course.setPeriod(noClassGenerator.convertPeriod(classTime % 11 % 2 == 0 ? classTime % 11 / 2 -1: classTime % 11 / 2 + 1 -1));
+        course.setPeriod(noClassGenerator.convertPeriod(classTime % 11 % 2 == 0 ? classTime % 11 / 2 - 1 : classTime % 11 / 2 + 1 - 1));
         course.setWeek(noClassGenerator.convertWeek(classTime / 11));
         return course;
     }

@@ -43,4 +43,6 @@ public interface CourseService {
     List<SustCourse> getUserCourseFromSustNewType(int userId) throws BusinessException;
 
     List<SustCourse> getUserCourseFromSustNewTypeWeeks(int userId,int weeks) throws BusinessException;
+
+    int getCurrentWeeks();
 }
