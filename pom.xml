@@ -17,7 +17,7 @@
 
   <groupId>com.fehead</groupId>
   <artifactId>course-except</artifactId>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.7-SNAPSHOT</version>
 
   <name>course-except</name>
 
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>com.fehead.open</groupId>
       <artifactId>api-call-counter</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
     </dependency>
 
     <dependency>
