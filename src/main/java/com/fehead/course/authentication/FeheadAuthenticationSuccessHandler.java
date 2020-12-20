@@ -1,6 +1,7 @@
 package com.fehead.course.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fehead.counter.open.annotation.SetPointCut;
 import com.fehead.lang.properties.FeheadProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -33,6 +34,7 @@ public class FeheadAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     FeheadProperties feheadProperties;
 
     @Override
+    @SetPointCut
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication)

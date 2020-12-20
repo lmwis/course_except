@@ -1,6 +1,7 @@
 package com.fehead.course.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fehead.counter.open.annotation.SetPointCut;
 import com.fehead.lang.response.AuthenticationReturnType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class FeheadAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     SecurityProperties securityProperties;
 
     @Override
+    @SetPointCut
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
